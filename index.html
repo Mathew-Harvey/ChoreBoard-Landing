@@ -1,0 +1,2077 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#F6EED5" />
+<title>ChoreBoard — chores, claimed.</title>
+<meta name="description" content="A family Kanban that pays out Sunday. Drag a chore, earn a dollar. Built for the kitchen wall and the phone in your pocket." />
+<meta property="og:title" content="ChoreBoard — chores, claimed." />
+<meta property="og:description" content="A family Kanban that pays out Sunday. Drag a chore, earn a dollar. Built for the kitchen wall and the phone in your pocket." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://rsms.me/" />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="7" fill="%23E07E2E" stroke="%2310182B" stroke-width="3"/><text x="16" y="22" text-anchor="middle" font-size="18" font-family="system-ui" font-weight="700" fill="white">©</text></svg>' />
+<style>
+/* ---------------------------------------------------------------------------
+   ChoreBoard landing — single-file build.
+   Design tokens copied verbatim from ChoreBoard-Web's Tailwind config so this
+   page is visually indistinguishable from the product. No build step: this
+   file is the deliverable.
+   --------------------------------------------------------------------------- */
+
+/* === Reset ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html, body { height: 100%; }
+html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
+body { overscroll-behavior: none; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; cursor: pointer; background: none; border: none; color: inherit; }
+input { font: inherit; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+
+/* === Tokens =========================================================== */
+:root {
+  /* Warm paper palette pulled from the style guide. */
+  --cream-50:  #FBF6E6;
+  --cream-100: #F6EED5;
+  --cream-200: #F0E5C0;
+  --cream-300: #E6D8A4;
+  --paper:     #FBFAF4;
+
+  /* Deep ink for borders, chrome, and dark "Available" column. */
+  --ink-900: #10182B;
+  --ink-800: #1A2238;
+  --ink-700: #2A3350;
+  --ink-500: #5B6072;
+  --ink-400: #7A7F8E;
+  --ink-300: #A6A9B5;
+
+  --money:     #0F6E37;
+  --money-dim: #3F8A57;
+
+  /* Member / persona accents (saturated, friendly). */
+  --accent-blue:   #3253D7;
+  --accent-red:    #DB4646;
+  --accent-yellow: #E8B12A;
+  --accent-green:  #3CA163;
+  --accent-orange: #E07E2E;
+  --accent-purple: #8B5BD9;
+  --accent-teal:   #22A8A8;
+  --accent-pink:   #E25CA6;
+
+  /* Lifted-card "paper" shadow: a thin dark border with a slight offset so
+     cards feel like they're sitting on paper. Same as the app's shadow-paper. */
+  --paper-sm: 2px 2px 0 0 rgba(16,24,43,0.9);
+  --paper-md: 4px 4px 0 0 rgba(16,24,43,0.9);
+  --paper-lg: 8px 8px 0 0 rgba(16,24,43,0.9);
+
+  --radius:   12px;
+  --radius-lg: 16px;
+  --chunky:   22px;
+  --ring:     0 0 0 2px var(--ink-900);
+
+  --display: 'Inter Tight', 'Inter Display', 'Inter', system-ui, sans-serif;
+  --sans:    'Inter Tight', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* === Base ============================================================= */
+body {
+  font-family: var(--sans);
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  text-rendering: optimizeLegibility;
+  background: var(--cream-100);
+  color: var(--ink-900);
+  line-height: 1.5;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(255, 232, 178, 0.40), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%,  rgba(255, 213, 175, 0.30), transparent 60%),
+    radial-gradient(1100px 700px at 50% 100%, rgba(60, 161, 99, 0.08),  transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+}
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+
+/* === Reusable components ============================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-size: 14px; font-weight: 600;
+  transition: transform .12s, background-color .15s, color .15s;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary    { background: var(--ink-900);  color: var(--cream-50); box-shadow: var(--ring), var(--paper-sm); }
+.btn-primary:hover    { background: var(--ink-800); }
+.btn-secondary  { background: var(--cream-50); color: var(--ink-900);  box-shadow: var(--ring), var(--paper-sm); }
+.btn-secondary:hover  { background: var(--cream-200); }
+.btn-money      { background: var(--money);    color: #fff;            box-shadow: var(--ring), var(--paper-sm); }
+.btn-money:hover { filter: brightness(.95); }
+.btn-ghost      { color: var(--ink-900); padding: 8px 12px; }
+.btn-ghost:hover { background: rgba(16,24,43,0.05); }
+.btn-lg         { padding: 12px 22px; font-size: 15px; border-radius: 16px; }
+.btn-lg.btn-primary, .btn-lg.btn-secondary { box-shadow: var(--ring), var(--paper-md); }
+
+.card {
+  background: var(--paper);
+  border-radius: var(--chunky);
+  box-shadow: var(--ring), var(--paper-md);
+}
+.card-soft { background: var(--paper); border-radius: var(--chunky); box-shadow: var(--ring); }
+.card-dark { background: var(--ink-900); color: var(--cream-50); border-radius: var(--chunky); box-shadow: var(--ring), var(--paper-md); }
+
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 0 0 2px rgba(16,24,43,0.85);
+  color: var(--ink-900);
+  outline: none;
+  border: none;
+}
+.input::placeholder { color: var(--ink-400); }
+.input:focus { box-shadow: 0 0 0 2px var(--accent-blue); }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(16,24,43,0.1);
+  color: var(--ink-900);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.pill-dark      { background: var(--ink-900);     color: var(--cream-50); }
+.pill-available { background: var(--ink-900);     color: var(--cream-50); }
+.pill-claimed   { background: var(--accent-blue); color: #fff; }
+.pill-pending   { background: var(--accent-orange); color: #fff; }
+.pill-approved  { background: var(--money);       color: #fff; }
+.pill-overdue   { background: var(--accent-red);  color: #fff; }
+
+.money-amt {
+  font-family: var(--display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--money);
+}
+
+.page-tag {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-500);
+}
+.page-tag-strong { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--ink-900); }
+
+/* === Page chrome ====================================================== */
+.topbar {
+  position: sticky; top: 0; z-index: 40;
+  border-bottom: 2px solid var(--ink-900);
+  background: rgba(246,238,213,0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 12px 20px;
+}
+@media (min-width: 640px) { .topbar { padding: 16px 28px; } }
+.topbar-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+}
+.wordmark { display: flex; align-items: center; gap: 10px; }
+.wordmark-glyph {
+  display: grid; place-items: center;
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: rgba(224,126,46,0.85);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  box-shadow: var(--ring), var(--paper-sm);
+}
+.wordmark-glyph span { margin-top: -2px; }
+.wordmark-text { font-family: var(--display); font-weight: 800; font-size: 18px; color: var(--ink-900); letter-spacing: -0.02em; }
+.topbar-right { display: flex; align-items: flex-start; gap: 16px; }
+.topbar-right .desktop-only { display: none; }
+@media (min-width: 768px) { .topbar-right .desktop-only { display: flex; align-items: center; gap: 16px; } .topbar-right .mobile-only { display: none; } }
+
+.pagetag-box { text-align: right; line-height: 1.15; }
+
+/* Dot indicator */
+.dots {
+  position: sticky;
+  top: 56px;
+  z-index: 30;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 2px solid rgba(16,24,43,0.15);
+  background: rgba(246,238,213,0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+@media (min-width: 640px) { .dots { top: 65px; } }
+.dot-btn { position: relative; display: flex; align-items: center; padding: 4px 2px; }
+.dot {
+  display: block;
+  height: 10px; width: 10px;
+  border-radius: 999px;
+  background: rgba(16,24,43,0.25);
+  transition: width .2s, background-color .2s;
+}
+.dot-btn[aria-current="true"] .dot { width: 32px; background: var(--ink-900); }
+.dot-label {
+  position: absolute; left: 50%; top: 20px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-700);
+  opacity: 0;
+  transition: opacity .2s;
+  pointer-events: none;
+}
+.dot-btn[aria-current="true"] .dot-label { opacity: 0.9; }
+.dot-btn:hover .dot-label { opacity: 0.6; }
+
+/* === Section commons ================================================= */
+section.section {
+  position: relative;
+  scroll-snap-align: start;
+  scroll-margin-top: 128px;
+  min-height: calc(100vh - 120px);
+  padding: 48px 20px;
+}
+@media (min-width: 640px) { section.section { padding: 60px 28px; } }
+.section-inner { max-width: 1200px; margin: 0 auto; }
+.section-title {
+  display: flex; flex-direction: column; gap: 12px;
+  margin-bottom: 28px;
+}
+@media (min-width: 640px) {
+  .section-title { flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 36px; }
+}
+.section-title h2 {
+  font-size: 32px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+@media (min-width: 640px) { .section-title h2 { font-size: 40px; } }
+.section-title .subtitle {
+  margin-top: 8px;
+  font-size: 14px;
+  max-width: 560px;
+  color: var(--ink-500);
+}
+@media (min-width: 640px) { .section-title .subtitle { font-size: 16px; } }
+
+/* === Hero ============================================================ */
+.hero-grid {
+  display: grid; gap: 40px;
+}
+@media (min-width: 960px) { .hero-grid { grid-template-columns: 1.05fr 1fr; align-items: center; gap: 56px; } }
+.hero h1 {
+  font-size: 48px; font-weight: 800; line-height: .95; letter-spacing: -0.03em;
+}
+.hero h1 .accent { display: block; color: var(--money); }
+@media (min-width: 640px) { .hero h1 { font-size: 64px; } }
+@media (min-width: 1024px) { .hero h1 { font-size: 80px; } }
+.hero p.lead {
+  margin-top: 20px;
+  max-width: 560px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-700);
+}
+@media (min-width: 640px) { .hero p.lead { font-size: 18px; } }
+.hero .cta-row { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.hero .feature-list {
+  margin-top: 32px;
+  max-width: 460px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px 28px;
+  font-size: 14px;
+  color: var(--ink-700);
+}
+.hero .feature-list li { display: flex; align-items: baseline; gap: 8px; }
+.hero .feature-list li::before { content: '•'; color: var(--money); }
+
+.demo-stack { position: relative; width: 100%; max-width: 460px; margin: 0 auto; }
+.demo-stack .ghost-col {
+  position: absolute; top: 16px;
+  height: 280px; width: 176px;
+  border: 2px dashed rgba(16,24,43,0.2);
+  border-radius: var(--chunky);
+}
+.demo-stack .ghost-col.left  { left: 8px; }
+.demo-stack .ghost-col.right { right: 8px; top: 48px; height: 256px; }
+@media (max-width: 639px) { .demo-stack .ghost-col { display: none; } }
+.demo-stack .bg-card {
+  position: absolute;
+  width: 224px;
+  padding: 12px;
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--ring), var(--paper-md);
+  user-select: none;
+  animation: cardDrift 4.5s ease-in-out infinite;
+}
+.demo-stack .bg-card.l { left: -16px; top: 8px; transform: rotate(-3deg); --r: -3deg; }
+.demo-stack .bg-card.r { right: -8px; top: 80px; transform: rotate(3deg); --r: 3deg; animation-delay: 1.5s; }
+@media (min-width: 640px) {
+  .demo-stack .bg-card.l { left: 8px; top: 16px; }
+  .demo-stack .bg-card.r { right: 16px; top: 96px; }
+}
+.demo-card-main {
+  position: relative;
+  z-index: 2;
+  width: 288px;
+  margin: 128px auto 0;
+  padding: 16px;
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--ring), var(--paper-lg);
+  display: flex; gap: 12px; align-items: flex-start;
+  border-left: 6px solid var(--ink-900);
+  transition: border-left-color .3s, background-color .3s;
+}
+@media (min-width: 640px) { .demo-card-main { width: 320px; } }
+.demo-card-main.approved { background: rgba(15,110,55,0.05); border-left-color: var(--money); }
+.demo-card-main.pending  { border-left-color: var(--accent-orange); }
+.demo-card-main.claimed  { border-left-color: var(--accent-green); }
+.demo-tally {
+  margin-top: 40px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.demo-tally .money {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--money);
+}
+.demo-tally .money.tick { animation: cashTick 380ms ease-out; }
+.demo-tally .hint { display: none; margin-left: 8px; font-size: 12px; color: var(--ink-500); }
+@media (min-width: 640px) { .demo-tally .hint { display: inline; } }
+
+/* === Chore card primitives ============================================ */
+.chore-icon {
+  display: grid; place-items: center;
+  width: 36px; height: 36px;
+  flex-shrink: 0;
+  background: var(--cream-200);
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 0 0 0 1px rgba(16,24,43,0.15);
+  line-height: 1;
+}
+
+.chore-card {
+  position: relative;
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px;
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--ring), var(--paper-sm);
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  transition: opacity .2s, transform .2s;
+  touch-action: none; /* allow our pointer-based drag on touch */
+  animation: floatIn 220ms ease-out;
+}
+.chore-card.on-dark { background: var(--cream-50); }
+.chore-card.approved { opacity: .9; }
+.chore-card.dragging { opacity: 0.2; pointer-events: none; }
+.chore-card.overdue { animation: pulseRed 1.4s ease-out infinite; box-shadow: 0 0 0 2px var(--accent-red), var(--paper-sm); }
+.chore-card.accented { border-left-width: 6px; border-left-style: solid; padding-left: 11px; }
+
+.chore-card .title-row { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+.chore-card h4 {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--ink-900);
+  letter-spacing: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.chore-card .preview {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink-700);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.chore-card .meta-row { margin-top: 6px; display: flex; gap: 8px; align-items: center; }
+.chore-card .tap-hint { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-400); }
+
+/* The dragging "clone" that follows the pointer. */
+#drag-clone {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  width: 280px;
+  transform-origin: top left;
+  transform: rotate(2deg) scale(1.02);
+  filter: drop-shadow(6px 6px 0 rgba(16,24,43,0.4));
+}
+
+/* === Interactive board =============================================== */
+.board-grid {
+  display: grid; gap: 16px;
+}
+@media (min-width: 1100px) {
+  .board-grid {
+    grid-template-columns: 18rem minmax(0,1fr) 18rem;
+    align-items: start;
+  }
+}
+.board-col { display: flex; flex-direction: column; gap: 16px; }
+.column {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 12px;
+  border-radius: var(--chunky);
+  box-shadow: var(--ring), var(--paper-md);
+  min-height: 16rem;
+}
+.column.available {
+  background: var(--ink-900);
+  color: var(--cream-50);
+  min-height: 28rem;
+}
+.column.approved {
+  background: rgba(15,110,55,0.10);
+  min-height: 28rem;
+}
+.column.is-over { outline: 2px solid var(--ink-900); outline-offset: 2px; }
+.column.available.is-over { outline-color: var(--accent-yellow); }
+.column.approved.is-over { outline-color: var(--money); }
+
+.column-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 4px;
+}
+.column-header h3 { font-family: var(--display); font-weight: 700; font-size: 16px; }
+.column-header .count { opacity: 0.6; }
+
+.column .cards { display: flex; flex-direction: column; gap: 8px; }
+.column.available .cards { max-height: 44rem; overflow-y: auto; padding-right: 4px; }
+.column.approved .cards { max-height: 44rem; overflow-y: auto; padding-right: 4px; }
+
+.column .empty {
+  border-radius: var(--radius);
+  padding: 24px 12px;
+  text-align: center;
+  font-size: 12px;
+}
+.column.available .empty { background: rgba(251,246,230,0.08); color: rgba(251,246,230,0.6); }
+.column.approved .empty { background: rgba(15,110,55,0.10); color: var(--ink-500); }
+
+/* Persona swimlanes */
+.lane {
+  position: relative;
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 12px;
+  border-radius: var(--chunky);
+  box-shadow: var(--ring), var(--paper-md);
+  min-height: 12rem;
+  transition: outline-color .15s;
+}
+.lane.is-over { outline: 2px solid var(--ink-900); outline-offset: 2px; }
+.lane-header { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; gap: 8px; }
+.lane-header .left { display: flex; align-items: center; gap: 8px; }
+.lane-glyph {
+  display: grid; place-items: center;
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  box-shadow: var(--ring);
+}
+.lane-header .subtitle { font-size: 12px; color: var(--ink-500); }
+.lane .drop-hint {
+  display: grid; place-items: center;
+  padding: 24px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  font-size: 11px; font-weight: 600;
+  color: var(--ink-700);
+  border-radius: var(--radius);
+  border: 2px dashed currentColor;
+}
+
+/* Stat panel + detail readout */
+.stat-panel { padding: 16px; }
+.stat-panel .page-tag { margin-bottom: 8px; color: rgba(251,246,230,0.7); }
+.stat-panel .level-row { display: flex; align-items: baseline; justify-content: space-between; }
+.stat-panel .level-row .level { font-family: var(--display); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; }
+.stat-panel .level-row .xp { font-family: var(--display); font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums; color: rgba(251,246,230,0.7); }
+.stat-panel .bar {
+  margin-top: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(251,246,230,0.15);
+  overflow: hidden;
+}
+.stat-panel .bar .fill {
+  height: 100%;
+  background: var(--accent-yellow);
+  transition: width .5s ease;
+}
+.stat-panel .next-at { margin-top: 4px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(251,246,230,0.6); }
+.stat-panel .tiles { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; }
+.stat-panel .tile { background: rgba(251,246,230,0.10); border-radius: 8px; padding: 8px; }
+.stat-panel .tile .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(251,246,230,0.6); }
+.stat-panel .tile .val { font-family: var(--display); font-weight: 800; font-size: 18px; }
+.stat-panel .footnote { margin-top: 12px; font-size: 11px; line-height: 1.5; color: rgba(251,246,230,0.7); }
+
+.detail-readout { padding: 16px; border-left: 6px solid var(--ink-900); }
+.detail-readout.empty { border-left-color: var(--ink-300); }
+.detail-readout h4 { margin-top: 4px; font-size: 18px; line-height: 1.25; }
+.detail-readout p { margin-top: 8px; font-size: 14px; line-height: 1.55; color: var(--ink-700); }
+.detail-readout .persona-tabs { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.detail-readout .persona-tabs .tab {
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 999px;
+  background: rgba(16,24,43,0.06);
+  color: var(--ink-500);
+}
+.detail-readout .persona-tabs .tab.active { color: #fff; }
+
+.board-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.board-legend {
+  margin-top: 20px;
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 12px 20px;
+  font-size: 12px;
+  color: var(--ink-500);
+}
+.board-legend .swatch { display: inline-block; height: 8px; width: 16px; border-radius: 999px; vertical-align: middle; margin-right: 6px; }
+.board-legend .kb-hint { margin-left: auto; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* === Family TV ====================================================== */
+.tv-hero { display: flex; flex-direction: column; gap: 24px; padding: 24px; }
+@media (min-width: 640px) { .tv-hero { flex-direction: row; align-items: center; justify-content: space-between; padding: 32px; } }
+.tv-hero .headline {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 56px;
+  letter-spacing: -0.03em;
+  color: var(--money);
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 640px) { .tv-hero .headline { font-size: 72px; } }
+.tv-grid { margin-top: 16px; display: grid; gap: 16px; }
+@media (min-width: 960px) { .tv-grid { grid-template-columns: 1.6fr 1fr; } }
+.leaderboard { padding: 20px; }
+.leaderboard h3 { font-family: var(--display); font-weight: 800; font-size: 20px; }
+.leaderboard ol { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+.leaderboard li { display: flex; align-items: center; gap: 12px; }
+.leaderboard .rank { width: 16px; text-align: right; font-size: 14px; font-weight: 600; color: var(--ink-500); }
+.leaderboard .name-row { flex: 1; display: flex; justify-content: space-between; align-items: baseline; }
+.leaderboard .name { font-size: 14px; font-weight: 600; }
+.leaderboard .bar { margin-top: 6px; height: 8px; border-radius: 999px; background: var(--cream-200); overflow: hidden; box-shadow: var(--ring); }
+.leaderboard .bar .fill { height: 100%; transition: width .5s ease; }
+.tv-tiles { display: flex; flex-direction: column; gap: 16px; }
+.tv-tile { display: flex; gap: 12px; align-items: center; padding: 16px; }
+.tv-tile .icon-box {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 8px;
+  box-shadow: var(--ring);
+  font-size: 18px;
+}
+.tv-tile .val { font-family: var(--display); font-weight: 800; font-size: 24px; }
+.tv-tile .caption { font-size: 12px; color: var(--ink-500); }
+.badge-tile ul { display: flex; flex-direction: column; gap: 8px; }
+.badge-tile li { display: flex; gap: 12px; align-items: center; }
+.badge-tile .glyph {
+  display: grid; place-items: center;
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  font-size: 18px;
+  background: rgba(232,177,42,0.2);
+  box-shadow: var(--ring);
+}
+
+.tv-stats { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (min-width: 640px) { .tv-stats { grid-template-columns: repeat(4, 1fr); } }
+.tv-stats .item { padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+.tv-stats .item .val { font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: -0.02em; }
+.tv-footnote { margin-top: 24px; text-align: center; font-size: 14px; color: var(--ink-500); }
+
+/* The money jar — same SVG-style fill as the in-app component, but
+   handcrafted with HTML/SVG primitives. */
+.money-jar { position: relative; width: 144px; height: 144px; flex-shrink: 0; }
+@media (min-width: 640px) { .money-jar { width: 176px; height: 176px; } }
+
+/* === Champion ========================================================= */
+.champion-card {
+  display: grid; gap: 24px;
+  padding: 24px;
+}
+@media (min-width: 640px) {
+  .champion-card { grid-template-columns: auto 1fr; padding: 32px; }
+}
+.champion-avatar-wrap { position: relative; }
+.champion-avatar {
+  display: grid; place-items: center;
+  width: 80px; height: 80px;
+  border-radius: 999px;
+  background: var(--accent-blue);
+  color: #fff;
+  font-weight: 800;
+  font-size: 30px;
+  box-shadow: var(--ring), var(--paper-sm);
+  margin: 0 auto;
+}
+@media (min-width: 640px) { .champion-avatar { margin: 0; } }
+.crown-bob {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  /* margin-left compensates for the emoji's intrinsic width so the keyframe
+     animation only owns rotate + translateY (not centering). Lets the same
+     keyframe be reused inline next to the leaderboard leader. */
+  margin-left: -18px;
+  font-size: 36px;
+  animation: crownBob 2.6s ease-in-out infinite;
+}
+.champion-content { display: flex; flex-direction: column; gap: 16px; }
+.champion-content h3 { font-size: 30px; }
+@media (min-width: 640px) { .champion-content h3 { font-size: 36px; } }
+.champion-content p { font-size: 14px; color: var(--ink-700); }
+@media (min-width: 640px) { .champion-content p { font-size: 16px; } }
+.waitlist-form { display: flex; flex-direction: column; gap: 12px; }
+@media (min-width: 640px) { .waitlist-form { flex-direction: row; align-items: flex-end; } }
+.waitlist-form label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; flex: 1; }
+.waitlist-form label .lbl-text { font-weight: 600; }
+.waitlist-form button { padding: 12px 20px; }
+@media (min-width: 640px) { .waitlist-form button { padding: 12px 20px; align-self: flex-end; } }
+.waitlist-done {
+  border-radius: var(--radius);
+  background: rgba(15,110,55,0.10);
+  box-shadow: 0 0 0 2px var(--money);
+  padding: 12px 16px;
+}
+.waitlist-done .page-tag { color: var(--money); }
+.champion-links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 14px; color: var(--ink-500); }
+.promise-grid { margin-top: 24px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 640px) { .promise-grid { grid-template-columns: repeat(3, 1fr); } }
+.promise-tile { padding: 16px; }
+.promise-tile .body { margin-top: 4px; font-size: 14px; line-height: 1.55; color: var(--ink-700); }
+
+/* === Confetti ========================================================= */
+.confetti-layer {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  border-radius: 2px;
+  animation: confettiFall 2.4s ease-in forwards;
+}
+
+/* === Footer =========================================================== */
+footer {
+  border-top: 2px solid rgba(16,24,43,0.15);
+  background: var(--cream-100);
+  padding: 32px 20px;
+}
+@media (min-width: 640px) { footer { padding: 32px 28px; } }
+.footer-inner { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+@media (min-width: 640px) { .footer-inner { flex-direction: row; align-items: center; justify-content: space-between; } }
+.footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; font-size: 12px; color: var(--ink-700); }
+.footer-links a:hover { text-decoration: underline; }
+.footer-note { max-width: 720px; margin: 16px auto 0; text-align: center; font-size: 11px; line-height: 1.55; color: var(--ink-400); }
+
+/* === Animations ======================================================= */
+@keyframes pulseRed {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(219,70,70,0.65), var(--paper-sm); }
+  50%      { box-shadow: 0 0 0 8px rgba(219,70,70,0), var(--paper-sm); }
+}
+@keyframes floatIn {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes confettiFall {
+  0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--cx), 110vh) rotate(720deg); opacity: 0; }
+}
+@keyframes crownBob {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50%      { transform: translateY(-3px) rotate(6deg); }
+}
+@keyframes cardDrift {
+  0%, 100% { transform: rotate(var(--r, -3deg)) translateY(0); }
+  50%      { transform: rotate(calc(var(--r, -3deg) + 1deg)) translateY(-6px); }
+}
+@keyframes cashTick {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-10px); opacity: .6; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes tossIn {
+  0%   { transform: translateY(-8px) rotate(-4deg); opacity: 0; }
+  60%  { transform: translateY(2px)  rotate( 2deg); opacity: 1; }
+  100% { transform: translateY(0)    rotate( 0deg); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     Top bar  (wordmark · CTAs · page tag)
+============================================================ -->
+<header class="topbar" role="banner">
+  <div class="topbar-inner">
+    <a href="#pitch" class="wordmark" aria-label="ChoreBoard home">
+      <span class="wordmark-glyph" aria-hidden="true"><span>©</span></span>
+      <span class="wordmark-text">ChoreBoard</span>
+    </a>
+    <div class="topbar-right">
+      <div class="desktop-only">
+        <a href="#" data-app-url class="btn btn-ghost">Sign in</a>
+        <a href="#start" class="btn btn-primary">Start a family</a>
+        <div class="pagetag-box" aria-hidden="true">
+          <div class="page-tag" id="topbar-tag-label">01 — PITCH</div>
+          <div class="page-tag-strong" id="topbar-tag-title">The pitch</div>
+        </div>
+      </div>
+      <a href="#start" class="btn btn-primary mobile-only">Start</a>
+    </div>
+  </div>
+</header>
+
+<!-- Dot indicator nav — same idiom as the multi-desktop nav inside the app. -->
+<nav class="dots" aria-label="Sections" id="dots">
+  <button type="button" class="dot-btn" data-section="pitch"  aria-current="true"  aria-label="Pitch">
+    <span class="dot"></span><span class="dot-label">PITCH</span>
+  </button>
+  <button type="button" class="dot-btn" data-section="board"  aria-label="Board">
+    <span class="dot"></span><span class="dot-label">KANBAN</span>
+  </button>
+  <button type="button" class="dot-btn" data-section="family" aria-label="Family TV">
+    <span class="dot"></span><span class="dot-label">AMBIENT</span>
+  </button>
+  <button type="button" class="dot-btn" data-section="start"  aria-label="Start a family">
+    <span class="dot"></span><span class="dot-label">CHAMPION</span>
+  </button>
+</nav>
+
+<main>
+
+<!-- ============================================================
+     Section 01 — Pitch
+============================================================ -->
+<section id="pitch" class="section hero">
+  <div class="section-inner hero-grid">
+    <div>
+      <div class="page-tag" style="margin-bottom:12px;">01 — THE PITCH</div>
+      <h1>
+        Chores,
+        <span class="accent">claimed.</span>
+      </h1>
+      <p class="lead">
+        ChoreBoard is the family fridge, but it pays out Sunday. A live Kanban
+        for the kitchen wall and the phone in your pocket. Anyone in the family
+        can grab a chore, do it, get approved, and watch the dollar land in
+        their week.
+      </p>
+      <div class="cta-row">
+        <a href="#board" class="btn btn-lg btn-primary">Try the board ↓</a>
+        <a href="#start" class="btn btn-lg btn-secondary">Start a family</a>
+        <span class="pill" style="margin-left:4px;">v1 · closed beta</span>
+      </div>
+      <ul class="feature-list">
+        <li>Real-time on every device</li>
+        <li>Kid PIN sign-in</li>
+        <li>Auto-renewing cadences</li>
+        <li>Sunday payout ledger</li>
+      </ul>
+    </div>
+
+    <!-- Demo card stack: the hero card cycles through claim → submit →
+         approve every ~2 seconds while the kid's tally ticks up. The
+         metaphor explains itself before anyone scrolls. -->
+    <div class="demo-stack">
+      <div class="ghost-col left"></div>
+      <div class="ghost-col right"></div>
+
+      <article class="bg-card l">
+        <div style="display:flex;gap:8px;align-items:flex-start;">
+          <div class="chore-icon" aria-hidden="true">🗑️</div>
+          <div style="min-width:0;flex:1;">
+            <div style="display:flex;gap:8px;justify-content:space-between;align-items:flex-start;">
+              <h4 style="font-family:var(--sans);font-weight:600;font-size:14px;color:var(--ink-900);">Take out kitchen bin</h4>
+              <span class="money-amt" style="font-size:14px;">$0.50</span>
+            </div>
+            <div style="margin-top:6px;"><span class="pill-available pill">AVAILABLE</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="bg-card r">
+        <div style="display:flex;gap:8px;align-items:flex-start;">
+          <div class="chore-icon" aria-hidden="true">🐾</div>
+          <div style="min-width:0;flex:1;">
+            <div style="display:flex;gap:8px;justify-content:space-between;align-items:flex-start;">
+              <h4 style="font-family:var(--sans);font-weight:600;font-size:14px;color:var(--ink-900);">Feed pets · evening</h4>
+              <span class="money-amt" style="font-size:14px;">$0.50</span>
+            </div>
+            <div style="margin-top:6px;"><span class="pill-available pill">AVAILABLE</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="demo-card-main" id="demo-card">
+        <div class="chore-icon" aria-hidden="true">🍽️</div>
+        <div style="min-width:0;flex:1;">
+          <div style="display:flex;gap:8px;justify-content:space-between;align-items:flex-start;">
+            <h4 style="font-family:var(--sans);font-weight:600;font-size:14px;color:var(--ink-900);">Pack the dishwasher</h4>
+            <span class="money-amt" style="font-size:16px;">$1.00</span>
+          </div>
+          <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
+            <span id="demo-pill" class="pill pill-available">AVAILABLE</span>
+            <span style="font-size:12px;color:var(--ink-500);">due 7pm</span>
+          </div>
+        </div>
+      </article>
+
+      <div class="demo-tally">
+        <span aria-hidden="true" style="display:grid;place-items:center;width:40px;height:40px;border-radius:999px;background:var(--accent-green);color:#fff;font-weight:700;font-size:14px;box-shadow:var(--ring),var(--paper-sm);">S</span>
+        <div>
+          <div class="page-tag">SKYE · THIS WEEK</div>
+          <div id="demo-tally" class="money">$19.00</div>
+        </div>
+        <div class="hint">live demo · loops every few seconds</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Section 02 — The interactive Kanban
+============================================================ -->
+<section id="board" class="section">
+  <div class="section-inner">
+    <div class="section-title">
+      <div>
+        <div class="page-tag">02 — KANBAN · LIVE DEMO</div>
+        <h2>The board, but it's about the product.</h2>
+        <p class="subtitle">
+          Drag a feature card from <b>Available</b> into a persona lane to read
+          the pitch from that angle. Or just tap a card and let the board play
+          itself.
+        </p>
+      </div>
+      <div class="board-controls">
+        <button type="button" id="autoplay-btn" class="btn btn-primary">Auto-play tour ▶</button>
+        <button type="button" id="replay-btn" class="btn btn-ghost" style="font-size:12px;">Replay</button>
+      </div>
+    </div>
+
+    <div class="board-grid">
+      <div class="board-col">
+        <section class="column available" data-column="available" aria-label="Available features">
+          <header class="column-header">
+            <h3>Available · <span class="count" id="count-available">0</span></h3>
+            <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;opacity:0.6;">features</span>
+          </header>
+          <div class="cards" id="cards-available"></div>
+        </section>
+
+        <section class="card-dark stat-panel" aria-label="Demo stats">
+          <div class="page-tag">YOUR DEMO STATS</div>
+          <div class="level-row">
+            <span class="level"><span>Level </span><span id="stat-level">1</span></span>
+            <span class="xp"><span id="stat-xp">0</span> XP</span>
+          </div>
+          <div class="bar"><div class="fill" id="stat-bar" style="width:0%"></div></div>
+          <div class="next-at">next at <span id="stat-next">500</span></div>
+          <div class="tiles">
+            <div class="tile">
+              <div class="lbl">explored</div>
+              <div class="val"><span id="stat-explored">0</span> / <span id="stat-total-a">10</span></div>
+            </div>
+            <div class="tile">
+              <div class="lbl">filed</div>
+              <div class="val"><span id="stat-filed">0</span> / <span id="stat-total-b">10</span></div>
+            </div>
+          </div>
+          <p class="footnote">
+            Same XP curve as the real product. Clear the board and the
+            Sunday-payout celebration unlocks the signup at the bottom of the
+            page.
+          </p>
+        </section>
+      </div>
+
+      <div class="board-col" id="lanes"></div>
+
+      <div class="board-col">
+        <section class="column approved" data-column="approved" aria-label="Approved">
+          <header class="column-header">
+            <h3>Approved · <span class="count" id="count-approved">0</span></h3>
+            <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--money);">filed</span>
+          </header>
+          <div class="cards" id="cards-approved"></div>
+        </section>
+
+        <section class="card detail-readout empty" id="detail-readout" aria-live="polite">
+          <div class="page-tag">DETAIL</div>
+          <p>
+            Tap or drag a card to read more. The same chore plays differently
+            for parents, kids, and the screen on the wall.
+          </p>
+        </section>
+      </div>
+    </div>
+
+    <div class="board-legend">
+      <span><span class="swatch" style="background:var(--ink-900);"></span>drag, or</span>
+      <span><span class="swatch" style="background:var(--accent-yellow);"></span>tap to auto-claim</span>
+      <span><span class="swatch" style="background:var(--money);"></span>drag to Approved to file</span>
+      <span class="kb-hint">keyboard: tab to a card, enter to auto-claim, R to reset</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Section 03 — Family TV
+============================================================ -->
+<section id="family" class="section">
+  <div class="section-inner">
+    <div class="section-title">
+      <div>
+        <div class="page-tag">03 — AMBIENT · THE DONOVANS · THIS WEEK</div>
+        <h2>The screen on the kitchen wall.</h2>
+        <p class="subtitle">
+          Big-screen TV mode. Everyone sees, nobody asks. Same layout the real
+          app ships.
+        </p>
+      </div>
+      <span class="pill">Pays out Sun 6:00pm</span>
+    </div>
+
+    <section class="card tv-hero">
+      <div>
+        <div class="page-tag" style="margin-bottom:4px;">THIS WEEK · ALL MEMBERS</div>
+        <div class="headline" id="tv-headline">$66.50</div>
+        <p style="margin-top:8px;max-width:480px;font-size:14px;color:var(--ink-700);">
+          Your demo XP is propping up the jar. Every chore approved on a real
+          family ticks this the same way — live, on every device, in front of
+          everyone.
+        </p>
+      </div>
+      <div class="money-jar" aria-hidden="true">
+        <svg viewBox="0 0 140 140" width="100%" height="100%">
+          <defs>
+            <clipPath id="jar-clip">
+              <rect x="22" y="46" width="96" height="78" rx="14" />
+            </clipPath>
+          </defs>
+          <g stroke="#E8B12A" stroke-width="3" stroke-linecap="round">
+            <line x1="130" y1="70" x2="140" y2="70"/>
+            <line x1="118.5" y1="105.3" x2="126.6" y2="111.1"/>
+            <line x1="91" y1="127.6" x2="94.1" y2="137.1"/>
+            <line x1="49" y1="127.6" x2="45.9" y2="137.1"/>
+            <line x1="21.5" y1="105.3" x2="13.4" y2="111.1"/>
+            <line x1="10" y1="70" x2="0" y2="70"/>
+            <line x1="21.5" y1="34.7" x2="13.4" y2="28.9"/>
+            <line x1="49" y1="12.4" x2="45.9" y2="2.9"/>
+            <line x1="91" y1="12.4" x2="94.1" y2="2.9"/>
+            <line x1="118.5" y1="34.7" x2="126.6" y2="28.9"/>
+          </g>
+          <rect x="28" y="36" width="84" height="14" rx="5" fill="#10182B"/>
+          <rect x="22" y="46" width="96" height="78" rx="14" fill="#FBFAF4" stroke="#10182B" stroke-width="3"/>
+          <g clip-path="url(#jar-clip)">
+            <rect id="jar-fill" x="22" y="100" width="96" height="24" fill="#E8B12A" style="transition: y .6s ease, height .6s ease;"/>
+            <circle cx="40" cy="110" r="6" fill="#E07E2E" stroke="#10182B" stroke-width="1.5"/>
+            <circle cx="58" cy="100" r="6" fill="#E07E2E" stroke="#10182B" stroke-width="1.5"/>
+            <circle cx="76" cy="90"  r="6" fill="#E07E2E" stroke="#10182B" stroke-width="1.5"/>
+            <circle cx="94" cy="80"  r="6" fill="#E07E2E" stroke="#10182B" stroke-width="1.5"/>
+          </g>
+          <rect x="40" y="86" width="60" height="16" rx="3" fill="#FBFAF4" stroke="#10182B" stroke-width="1.5"/>
+          <text x="70" y="98" text-anchor="middle" font-size="9" font-weight="700" fill="#10182B" font-family="Inter Tight, sans-serif">PAYDAY</text>
+        </svg>
+      </div>
+    </section>
+
+    <div class="tv-grid">
+      <section class="card leaderboard">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <h3>Weekly leaderboard</h3>
+          <span style="font-size:12px;color:var(--ink-500);">Champion announced Sun 6pm</span>
+        </div>
+        <ol id="leaderboard-list"></ol>
+      </section>
+
+      <div class="tv-tiles">
+        <div class="card tv-tile">
+          <div class="icon-box" style="background:rgba(224,126,46,0.18);">🔥</div>
+          <div style="min-width:0;flex:1;">
+            <div class="page-tag">TOP DAILY STREAK</div>
+            <div style="display:flex;gap:8px;align-items:baseline;">
+              <span class="val" style="color:var(--accent-orange);">6</span>
+              <span class="caption">Elodie · best 11</span>
+            </div>
+          </div>
+        </div>
+        <div class="card tv-tile">
+          <div class="icon-box" style="background:rgba(232,177,42,0.18);">⚡</div>
+          <div style="min-width:0;flex:1;">
+            <div class="page-tag">MATT · LEVEL UP</div>
+            <div style="display:flex;gap:8px;align-items:baseline;">
+              <span class="val" style="color:var(--accent-yellow);">3</span>
+              <span class="caption">Champion · 2,340 XP</span>
+            </div>
+          </div>
+        </div>
+        <div class="card badge-tile" style="padding:16px;">
+          <div class="page-tag" style="margin-bottom:8px;">LATEST BADGES</div>
+          <ul>
+            <li><span class="glyph">🏁</span><div><div style="font-size:14px;font-weight:600;">First Steps</div><div style="font-size:12px;color:var(--ink-500);">Skye</div></div></li>
+            <li><span class="glyph">🍽️</span><div><div style="font-size:14px;font-weight:600;">Dishwasher Dynasty</div><div style="font-size:12px;color:var(--ink-500);">Elodie</div></div></li>
+            <li><span class="glyph">🎯</span><div><div style="font-size:14px;font-weight:600;">Goal Crusher</div><div style="font-size:12px;color:var(--ink-500);">Elodie</div></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="tv-stats">
+      <div class="card item"><div class="page-tag">Family lifetime $</div><div class="val">$184.50</div></div>
+      <div class="card item"><div class="page-tag">Family lifetime chores</div><div class="val">312</div></div>
+      <div class="card item"><div class="page-tag">On the board</div><div class="val">6</div></div>
+      <div class="card item"><div class="page-tag">Approved today</div><div class="val">4</div></div>
+    </div>
+
+    <p class="tv-footnote" id="tv-footnote">Try the board above — your XP folds into this preview.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     Section 04 — Champion / signup
+============================================================ -->
+<section id="start" class="section">
+  <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
+  <div class="section-inner" style="max-width:880px;">
+    <div class="section-title">
+      <div>
+        <div class="page-tag">04 — START · CHAMPION OF THE WEEK</div>
+        <h2 id="champion-title">Be your family's champion.</h2>
+        <p class="subtitle" id="champion-subtitle">
+          You can keep playing the demo above, or skip ahead and stake out a
+          spot for your family.
+        </p>
+      </div>
+    </div>
+
+    <div class="card champion-card">
+      <div class="champion-avatar-wrap">
+        <div class="champion-avatar" aria-label="You">Y</div>
+        <span class="crown-bob" id="crown" aria-hidden="true" style="display:none;">👑</span>
+      </div>
+      <div class="champion-content">
+        <div>
+          <div class="page-tag" id="champion-pretag" style="margin-bottom:4px;">GET ON THE LIST</div>
+          <h3>Start a family.</h3>
+          <p>
+            v1 is in closed beta. Drop your email and we'll send an invite the
+            moment a slot opens up. No drip campaign, no upsell — one email
+            with a link, then the next one when payout day actually arrives.
+          </p>
+        </div>
+
+        <form id="waitlist-form" class="waitlist-form" novalidate>
+          <label>
+            <span class="lbl-text">Email</span>
+            <input class="input" type="email" required placeholder="you@example.com" autocomplete="email" id="waitlist-email" />
+          </label>
+          <label>
+            <span class="lbl-text">Family name</span>
+            <input class="input" type="text" placeholder="The Donovans" id="waitlist-family" />
+          </label>
+          <button type="submit" class="btn btn-primary">Get the invite</button>
+        </form>
+
+        <div class="champion-links">
+          <a href="#" data-app-url class="btn btn-secondary">Already have an invite? Sign in →</a>
+          <span>·</span>
+          <a href="https://github.com/Mathew-Harvey/ChoreBoard-Api" target="_blank" rel="noreferrer" style="color:var(--ink-700);">Read the spec on GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="promise-grid">
+      <div class="card-soft promise-tile">
+        <div class="page-tag">NO ADS</div>
+        <p class="body">No notifications begging you to come back. The board is the product.</p>
+      </div>
+      <div class="card-soft promise-tile">
+        <div class="page-tag">ONE ORIGIN</div>
+        <p class="body">Fastify + Postgres + React SPA. Single deploy. Codebase fits in your head.</p>
+      </div>
+      <div class="card-soft promise-tile">
+        <div class="page-tag">FREE FOR V1</div>
+        <p class="body">Free while we're in beta. If paid plans show up, your beta family stays free.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="#pitch" class="wordmark" aria-label="ChoreBoard home">
+        <span class="wordmark-glyph" aria-hidden="true"><span>©</span></span>
+        <span class="wordmark-text" style="font-size:16px;">ChoreBoard</span>
+      </a>
+      <span style="font-size:12px;color:var(--ink-500);">© <span id="year"></span> ChoreBoard · made in Australia</span>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://github.com/Mathew-Harvey/ChoreBoard-Api/blob/main/spec.md" target="_blank" rel="noreferrer">v1 spec</a>
+      <a href="https://github.com/Mathew-Harvey/ChoreBoard-Api"  target="_blank" rel="noreferrer">API</a>
+      <a href="https://github.com/Mathew-Harvey/ChoreBoard-Web"  target="_blank" rel="noreferrer">Web</a>
+      <a href="#" data-app-url>Sign in</a>
+    </nav>
+  </div>
+  <p class="footer-note">
+    Built by a parent for a household. No tracking, no telemetry, no notifications
+    you didn't ask for. Cookies are session-only and used for sign-in.
+  </p>
+</footer>
+
+<script>
+/* ===========================================================================
+   ChoreBoard landing — single-file runtime.
+   Vanilla JS, no build step. Implements:
+     - 10 feature cards × 3 personas of marketing copy
+     - Pointer-based drag and drop that works on mouse, pen, and touch
+     - Tap-to-auto-claim and a keyboard path (Tab + Enter)
+     - Auto-play tour, Replay
+     - XP / Level stat panel using the same curve as the real product (spec §7)
+     - Detail readout that swaps copy by the lane the card landed in
+     - Money jar that fills with the visitor's demo XP
+     - Section nav: IntersectionObserver + smooth scroll + arrow keys
+     - Champion confetti when the board has been cleared
+     - Waitlist form persisted to localStorage
+   =========================================================================== */
+(() => {
+  'use strict';
+
+  // ---- Configurable URLs ------------------------------------------------
+  // The example AppHub-Landing has a single deployed origin; ChoreBoard's web
+  // client is meant to live somewhere like app.choreboard.au. Override by
+  // setting `window.CHOREBOARD_APP_URL` before this script runs.
+  const APP_URL = window.CHOREBOARD_APP_URL || 'https://app.choreboard.au';
+  document.querySelectorAll('[data-app-url]').forEach((el) => {
+    el.setAttribute('href', APP_URL);
+  });
+  document.getElementById('year').textContent = String(new Date().getFullYear());
+
+  // ---- Data -------------------------------------------------------------
+  const PERSONAS = {
+    parent: { name: 'Parents',   tag: 'PARENTS',  color: '#3253D7', subtitle: 'How it feels for the people doing the approving.' },
+    kid:    { name: 'Kids',      tag: 'KIDS',     color: '#E07E2E', subtitle: 'What the board looks like from the small end of the kitchen.' },
+    family: { name: 'Family TV', tag: 'AMBIENT',  color: '#0F6E37', subtitle: 'The big screen on the kitchen wall, watching everyone watch it.' },
+  };
+  const PERSONA_ORDER = ['parent', 'kid', 'family'];
+
+  const FEATURE_CARDS = [
+    {
+      id: 'claim',
+      title: 'Pack the dishwasher',
+      amountCents: 100,
+      glyph: '🍽️',
+      preview: 'Drag from Available into your lane. Do the chore. Drag to Pending.',
+      bestPersona: 'kid',
+      personas: {
+        parent: { headline: 'You are not the assignment manager.',
+                  body: 'Chores live on the board. Anyone in the family can grab one. You stop being the bottleneck the second the kid learns where the dishwasher card lives.' },
+        kid:    { headline: '$1 lands the second a parent approves.',
+                  body: 'Drag the card into your lane. Do the thing. Drag to Pending approval. A parent taps Approve from wherever they are and the dollar lands in your week.' },
+        family: { headline: 'The kitchen screen sees it first.',
+                  body: 'Every claim, submit, and approval broadcasts live to every device on the family. Your phone, the touchscreen on the bench, your partner\u2019s laptop — same board, no refresh.' },
+      },
+    },
+    {
+      id: 'cadence',
+      title: 'Vacuum the high-traffic areas',
+      amountCents: 200,
+      glyph: '🧹',
+      preview: 'Auto-renews daily at 2pm. Or weekly. Or every second Tuesday. Your call.',
+      bestPersona: 'parent',
+      personas: {
+        parent: { headline: 'Set it once. It comes back forever.',
+                  body: 'Daily, every-N-days, weekly on specific weekdays, monthly on a date or Nth weekday — the cadence editor handles all of it. The board materialises the next instance the moment the previous one closes out.' },
+        kid:    { headline: 'Every morning, fresh cards to pick from.',
+                  body: 'The board reloads itself. The dishwasher card you missed yesterday is back. The vacuum card is waiting. You don\u2019t have to remember.' },
+        family: { headline: 'The rhythm of the week, made visible.',
+                  body: 'Mon/Wed/Fri laundry. Sat deep clean. Sunday sheets. It all sits on the ambient TV so the whole family sees the shape of the week without anyone announcing it.' },
+      },
+    },
+    {
+      id: 'overdue',
+      title: 'Tidy the living room',
+      amountCents: 150,
+      glyph: '🛋️',
+      preview: 'Untouched since 5pm yesterday — the border pulses red until someone grabs it.',
+      overdue: true,
+      bestPersona: 'family',
+      personas: {
+        parent: { headline: 'No nagging required.',
+                  body: 'An overdue chore turns into a pulsing red card on every screen in the house. The board does the reminding. You get to be the parent, not the foreman.' },
+        kid:    { headline: 'Last call — the red one is about to disappear.',
+                  body: 'Pulsing red means it\u2019s about to be replaced by the next renewal. Grab it now and you still get paid. Let it expire and it logs as missed in the family\u2019s stats.' },
+        family: { headline: 'The board nags itself.',
+                  body: 'No push notifications, no buzzing watches. The kitchen TV just quietly throbs red until someone walks past and decides they\u2019d like $1.50 more than they\u2019d like to ignore it.' },
+      },
+    },
+    {
+      id: 'payout',
+      title: 'Sunday payout',
+      amountCents: 4250,
+      glyph: '💰',
+      preview: 'Every Sunday at the time you choose, the week snapshots and pays out.',
+      bestPersona: 'parent',
+      personas: {
+        parent: { headline: 'A ledger, not a guessing game.',
+                  body: 'Every approved chore writes a row immediately. Sunday at your configured payout time, the week closes, the ledger groups by member, and you mark lines paid as the cash or transfer goes out. CSV export for the spreadsheet inclined.' },
+        kid:    { headline: 'Sunday is payday. That\u2019s the whole deal.',
+                  body: 'You can see exactly what you\u2019re owed all week. When Sunday arrives, the board does a champion-of-the-week reveal with confetti and a crown for whoever earned most.' },
+        family: { headline: 'Champion of the Week, complete with crown.',
+                  body: 'At payout time the TV plays a celebration: confetti, an animated crown above the winner, callouts like \u201cpersonal best\u201d or \u201cbest week ever\u201d when they apply. Weekly bragging rights are real currency in this house.' },
+      },
+    },
+    {
+      id: 'pin',
+      title: 'Kid sign-in',
+      amountCents: 50,
+      glyph: '🔢',
+      preview: 'Pick an avatar, tap four digits, you\u2019re in. No email, no password.',
+      bestPersona: 'kid',
+      personas: {
+        parent: { headline: 'One shared device. The whole family.',
+                  body: 'You sign in with email and password. Kids sign in with a 4-digit PIN selected from the family roster on the device. Parent approval actions ask for a quick parent PIN so a kid can\u2019t approve themselves from the family touchscreen.' },
+        kid:    { headline: 'Tap your face. Tap four numbers. Done.',
+                  body: 'No email account, no password to forget, no \u201cI\u2019ll get you set up later.\u201d The board is yours the moment a parent adds your name to the family.' },
+        family: { headline: 'Built for the kitchen touchscreen.',
+                  body: 'A spare iPad or Android tablet on the wall, signed in to the family. Anyone walks up, picks themselves, gets to work. The board hibernates back to the family view when nobody\u2019s touching it.' },
+      },
+    },
+    {
+      id: 'realtime',
+      title: 'Real-time sync',
+      amountCents: 0,
+      glyph: '📡',
+      preview: 'Claim on your phone. The kitchen screen updates before you put the phone down.',
+      bestPersona: 'family',
+      personas: {
+        parent: { headline: 'Server-Sent Events, not vibes.',
+                  body: 'A single SSE stream per session pushes every state change to every connected client. No polling, no refresh, no \u201chave you tried hitting reload?\u201d The kid claims, the kitchen TV sees it, you see it, the partner sees it. One source of truth.' },
+        kid:    { headline: 'No refresh dance.',
+                  body: 'You claim the dishwasher on the iPad on the bench. By the time you walk over to the dishwasher, the card is in your lane on every device in the house. It just keeps up.' },
+        family: { headline: 'The board you walk past is always right.',
+                  body: 'Ambient screens only work if you can trust them. ChoreBoard\u2019s board on the wall reflects whatever just happened, anywhere in the family, within a round trip.' },
+      },
+    },
+    {
+      id: 'gamification',
+      title: 'Badges · streaks · XP',
+      amountCents: 0,
+      glyph: '🏅',
+      preview: 'Quiet gamification. Every cent is XP. Levels, daily streaks, badge unlocks.',
+      bestPersona: 'kid',
+      personas: {
+        parent: { headline: 'Quiet recognition that lands well.',
+                  body: 'Every cent earned is one XP. Levels follow a gentle curve. Badges unlock silently and only get announced on the family TV. The settings let you dial the volume down if it starts feeling oppressive — it should feel like a high-five, not a slot machine.' },
+        kid:    { headline: 'Streaks, badges, a crown, a flame counter.',
+                  body: 'Daily streak is a flame next to your name. Hit 7 days of dishwasher and you get the Dishwasher Dynasty badge. First chore ever earns First Steps. Hit your goal and the screen explodes in confetti just for you.' },
+        family: { headline: 'The TV announces the wins.',
+                  body: 'A badge unlock plays a small reveal on the ambient screen. A level-up plays a sound. The Sunday champion reveal is the big set piece. Everything else stays subtle so the room doesn\u2019t feel like a casino.' },
+      },
+    },
+    {
+      id: 'goals',
+      title: '\u201CNintendo Switch — $450\u201D',
+      amountCents: 45000,
+      glyph: '🎯',
+      preview: 'A named goal with a target and an optional deadline. Watch the bar fill.',
+      bestPersona: 'kid',
+      personas: {
+        parent: { headline: 'Saving, with a number on it.',
+                  body: 'Each kid can set one or more named goals — \u201cSwitch by Christmas\u201d, \u201c$50 for the school camp\u201d. Progress counts either weekly + unpaid or lifetime, your choice. Hitting a goal earns the Goal Crusher badge and fires confetti on their dashboard.' },
+        kid:    { headline: 'You can see exactly how close you are.',
+                  body: 'Open your member dashboard, see the goal bar fill in real time as you approve chores. When it crosses 100% the confetti is just for you. No math required, no \u201chow much do I have again?\u201d' },
+        family: { headline: 'Long-arc wins, not just weekly ones.',
+                  body: 'Goals span weeks or months. The family screen quietly celebrates when one lands. It\u2019s the difference between \u201cdo your chores\u201d and \u201cyou\u2019re three weeks out from a Switch.\u201d' },
+      },
+    },
+    {
+      id: 'photos',
+      title: 'Wipe kitchen benches',
+      amountCents: 100,
+      glyph: '📸',
+      preview: 'Optional photo proof at submit time. Verify or trust — your call.',
+      bestPersona: 'parent',
+      personas: {
+        parent: { headline: 'Trust, but verify when you feel like it.',
+                  body: 'Photos are optional per chore. Set \u201crequires photo\u201d on the chores where it matters (\u201cbench wiped\u201d, \u201cbathroom mopped\u201d), leave it off for the obvious ones. Photos live on Cloudflare R2, thumbs in the approval queue.' },
+        kid:    { headline: 'Show off your work.',
+                  body: 'If the chore wants a photo, tap to add one at submit time. Parents see it inline in their approval queue, so the \u201cit doesn\u2019t look done\u201d argument goes away.' },
+        family: { headline: 'Receipts. For when receipts matter.',
+                  body: 'The family ledger keeps a small image trail for the chores where it counts. Not surveillance — just the same paper-trail discipline you\u2019d apply to a small business doing $100 a week.' },
+      },
+    },
+    {
+      id: 'stack',
+      title: 'Built honest',
+      amountCents: 0,
+      glyph: '🧰',
+      preview: 'One server, one DB, one SPA. PWA install for phones. No skinner-box drip.',
+      bestPersona: 'family',
+      personas: {
+        parent: { headline: 'A weekend project, built like a forever project.',
+                  body: 'Fastify + Postgres + a single React SPA. Argon2 password hashing, HTTP-only cookie sessions, SSE for real-time, R2 for photos. No Redis, no microservices, no Next.js dragging Vercel in. The codebase fits in your head; it\u2019ll outlive the trend cycle.' },
+        kid:    { headline: 'No ads. No drip. No upsell.',
+                  body: 'No notifications begging you to come back. No \u201cstreak freeze\u201d store. No mascot guilting you. The board is the product. The board pays.' },
+        family: { headline: 'Installable on phones. Lives on the wall.',
+                  body: 'PWA installs to the home screen so iOS web push works for approvals. Single origin, single deploy. Put it on the kitchen wall today; it\u2019ll still work the same way in five years.' },
+      },
+    },
+  ];
+
+  const SAMPLE_FAMILY = [
+    { id: 's', name: 'Skye',   color: '#3CA163', week: 1850 },
+    { id: 'e', name: 'Elodie', color: '#E07E2E', week: 2400 },
+    { id: 'm', name: 'Matt',   color: '#3253D7', week: 1500 },
+    { id: 'j', name: 'Jess',   color: '#E25CA6', week:  900 },
+  ];
+
+  const SECTIONS = [
+    { id: 'pitch',  label: 'PITCH',     title: 'The pitch' },
+    { id: 'board',  label: 'KANBAN',    title: 'The board' },
+    { id: 'family', label: 'AMBIENT',   title: 'Family TV' },
+    { id: 'start',  label: 'CHAMPION',  title: 'Start a family' },
+  ];
+
+  // ---- Helpers ----------------------------------------------------------
+  const money = (cents) => '$' + (cents / 100).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const hexAlpha = (hex, a) => {
+    if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return `rgba(91,96,114,${a})`;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r},${g},${b},${a})`;
+  };
+  const escapeHtml = (s) => s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  // ---- Persistent state ------------------------------------------------
+  const STORAGE_KEY = 'choreboard-landing-board-v1';
+  const initialPlacement = () => {
+    const o = {};
+    for (const c of FEATURE_CARDS) o[c.id] = 'available';
+    return o;
+  };
+  const initialSeen = () => {
+    const o = {};
+    for (const c of FEATURE_CARDS) o[c.id] = [];
+    return o;
+  };
+  const state = {
+    placement: initialPlacement(),
+    seenBy: initialSeen(),
+    focused: null,
+    autoPlaying: false,
+  };
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        for (const c of FEATURE_CARDS) {
+          if (parsed.placement && typeof parsed.placement[c.id] === 'string') {
+            state.placement[c.id] = parsed.placement[c.id];
+          }
+          if (parsed.seenBy && Array.isArray(parsed.seenBy[c.id])) {
+            state.seenBy[c.id] = parsed.seenBy[c.id].filter((p) => p in PERSONAS);
+          }
+        }
+      }
+    }
+  } catch { /* ignore corrupted state */ }
+  const persist = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        placement: state.placement,
+        seenBy: state.seenBy,
+      }));
+    } catch { /* quota / private mode — silently no-op */ }
+  };
+
+  // ---- Derived state ----------------------------------------------------
+  const totalXp = () => {
+    let xp = 0;
+    for (const personas of Object.values(state.seenBy)) xp += personas.length * 50;
+    for (const col of Object.values(state.placement)) if (col === 'approved') xp += 200;
+    return xp;
+  };
+  const exploredCount = () => Object.values(state.seenBy).filter((p) => p.length > 0).length;
+  const approvedCount = () => Object.values(state.placement).filter((c) => c === 'approved').length;
+  const levelFromXp = (xp) => {
+    const thresholds = [0, 500, 1500, 3500, 7500];
+    let level = 1;
+    for (let i = 0; i < thresholds.length; i++) if (xp >= thresholds[i]) level = i + 1;
+    const floor = thresholds[level - 1] ?? 0;
+    const nextAt = thresholds[level] ?? floor * 2;
+    return { level, floor, nextAt };
+  };
+
+  // ---- Renderers -------------------------------------------------------
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => Array.from((root || document).querySelectorAll(sel));
+
+  function renderCardHtml(card, opts) {
+    const accent = opts.accent;
+    const tone = opts.tone || 'onLight';
+    const approved = !!opts.approved;
+    const overlay = !!opts.overlay;
+    const autoClaimLabel = opts.autoClaimLabel;
+
+    const classes = ['chore-card'];
+    if (tone === 'onDark') classes.push('on-dark');
+    if (approved) classes.push('approved');
+    if (card.overdue && !approved) classes.push('overdue');
+    if (accent) classes.push('accented');
+    if (overlay) classes.push('overlay');
+
+    const style = accent ? `border-left-color:${accent};` : '';
+
+    const pill = approved ? '<span class="pill pill-approved">✓ FILED</span>'
+      : card.overdue ? '<span class="pill pill-overdue">OVERDUE</span>'
+      : accent ? '<span class="pill pill-claimed">EXPLORED</span>'
+      : '<span class="pill pill-available">FEATURE</span>';
+
+    const amount = card.amountCents > 0
+      ? `<span class="money-amt" style="font-size:14px;">${money(card.amountCents)}</span>`
+      : '';
+
+    const tap = autoClaimLabel
+      ? `<span class="tap-hint">tap → ${escapeHtml(autoClaimLabel)}</span>`
+      : '';
+
+    return `
+      <article class="${classes.join(' ')}"
+               data-card-id="${card.id}"
+               data-draggable="${approved || overlay ? 'false' : 'true'}"
+               tabindex="${approved || overlay ? -1 : 0}"
+               role="button"
+               aria-label="${escapeHtml(card.title)}"
+               style="${style}">
+        <div class="chore-icon" aria-hidden="true">${card.glyph}</div>
+        <div style="min-width:0;flex:1;">
+          <div class="title-row">
+            <h4>${escapeHtml(card.title)}</h4>
+            ${amount}
+          </div>
+          <p class="preview">${escapeHtml(card.preview)}</p>
+          <div class="meta-row">
+            ${pill}
+            ${tap}
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderAvailable() {
+    const cards = FEATURE_CARDS.filter((c) => state.placement[c.id] === 'available');
+    $('#count-available').textContent = String(cards.length);
+    const root = $('#cards-available');
+    if (cards.length === 0) {
+      root.innerHTML = '<div class="empty">All explored. Nice work.</div>';
+      return;
+    }
+    root.innerHTML = cards.map((c) => renderCardHtml(c, { tone: 'onDark' })).join('');
+  }
+
+  function renderApproved() {
+    const cards = FEATURE_CARDS.filter((c) => state.placement[c.id] === 'approved');
+    $('#count-approved').textContent = String(cards.length);
+    const root = $('#cards-approved');
+    if (cards.length === 0) {
+      root.innerHTML = '<div class="empty">Drag a card here when you\u2019re done with it.</div>';
+      return;
+    }
+    root.innerHTML = cards.map((c) => renderCardHtml(c, { accent: '#0F6E37', approved: true })).join('');
+  }
+
+  function renderLanes() {
+    const root = $('#lanes');
+    root.innerHTML = PERSONA_ORDER.map((p) => {
+      const meta = PERSONAS[p];
+      const cards = FEATURE_CARDS.filter((c) => state.placement[c.id] === p);
+      const inner = cards.length === 0
+        ? `<div class="drop-hint" style="color:${meta.color};">Drop a feature here</div>`
+        : cards.map((c) => renderCardHtml(c, { accent: meta.color, autoClaimLabel: 'File ✓' })).join('');
+      return `
+        <section class="lane" data-column="${p}" style="background:${hexAlpha(meta.color, 0.18)};">
+          <header class="lane-header">
+            <div class="left">
+              <span class="lane-glyph" style="background:${meta.color};" aria-hidden="true">${meta.name.charAt(0)}</span>
+              <div>
+                <div class="page-tag" style="color:${meta.color};">${meta.tag}</div>
+                <h3>${meta.name}</h3>
+              </div>
+            </div>
+            <span class="subtitle">${meta.subtitle}</span>
+          </header>
+          <div class="cards">${inner}</div>
+        </section>
+      `;
+    }).join('');
+  }
+
+  function renderStats() {
+    const xp = totalXp();
+    const lvl = levelFromXp(xp);
+    const span = Math.max(1, lvl.nextAt - lvl.floor);
+    const into = Math.max(0, Math.min(1, (xp - lvl.floor) / span));
+    $('#stat-level').textContent = String(lvl.level);
+    $('#stat-xp').textContent = xp.toLocaleString();
+    $('#stat-bar').style.width = (into * 100) + '%';
+    $('#stat-next').textContent = lvl.nextAt.toLocaleString();
+    $('#stat-explored').textContent = String(exploredCount());
+    $('#stat-filed').textContent = String(approvedCount());
+    $('#stat-total-a').textContent = String(FEATURE_CARDS.length);
+    $('#stat-total-b').textContent = String(FEATURE_CARDS.length);
+  }
+
+  function renderDetail() {
+    const root = $('#detail-readout');
+    if (!state.focused) {
+      root.classList.add('empty');
+      root.style.borderLeftColor = 'var(--ink-300)';
+      root.innerHTML = `
+        <div class="page-tag">DETAIL</div>
+        <p>
+          Tap or drag a card to read more. The same chore plays differently for
+          parents, kids, and the screen on the wall.
+        </p>
+      `;
+      return;
+    }
+    const card = FEATURE_CARDS.find((c) => c.id === state.focused);
+    if (!card) return;
+    const col = state.placement[card.id];
+    const persona = (col === 'parent' || col === 'kid' || col === 'family') ? col : card.bestPersona;
+    const copy = card.personas[persona];
+    const meta = PERSONAS[persona];
+
+    root.classList.remove('empty');
+    root.style.borderLeftColor = meta.color;
+    const tabs = PERSONA_ORDER.map((p) => {
+      const m = PERSONAS[p];
+      const active = p === persona;
+      const style = active
+        ? `background:${m.color};color:#fff;`
+        : '';
+      return `<span class="tab ${active ? 'active' : ''}" style="${style}">${m.name}</span>`;
+    }).join('');
+    root.innerHTML = `
+      <div class="page-tag" style="color:${meta.color};">${meta.tag} · ${escapeHtml(card.title)}</div>
+      <h4>${escapeHtml(copy.headline)}</h4>
+      <p>${escapeHtml(copy.body)}</p>
+      <div class="persona-tabs">${tabs}</div>
+    `;
+  }
+
+  // ---- Family TV section folds visitor XP into the simulated total ----
+  function renderFamilyTV() {
+    const xp = totalXp();
+    const base = SAMPLE_FAMILY.reduce((acc, m) => acc + m.week, 0);
+    const total = Math.min(20000, base + Math.floor(xp * 1.5));
+    $('#tv-headline').textContent = money(total);
+
+    // Money jar fill: same visual rule as the in-app component — saturates
+    // around $100/week. The jar's inner clip rect is 96×78 at (22,46).
+    const max = 10000;
+    const fill = Math.max(0, Math.min(1, total / max));
+    const innerHeight = 78;
+    const innerTop = 46;
+    const fillRect = document.getElementById('jar-fill');
+    if (fillRect) {
+      fillRect.setAttribute('y',      String(innerTop + innerHeight * (1 - fill)));
+      fillRect.setAttribute('height', String(innerHeight * fill));
+    }
+
+    // Footnote: nudge visitors to engage if they haven't.
+    const explored = exploredCount();
+    $('#tv-footnote').textContent = explored > 0
+      ? `Your demo XP: ${xp.toLocaleString()} · ${explored} feature${explored === 1 ? '' : 's'} explored.`
+      : 'Try the board above — your XP folds into this preview.';
+
+    // Leaderboard (sample family).
+    const list = $('#leaderboard-list');
+    const ranked = [...SAMPLE_FAMILY].sort((a, b) => b.week - a.week);
+    const maxAmount = Math.max(1, ...ranked.map((m) => m.week));
+    list.innerHTML = ranked.map((m, i) => `
+      <li>
+        <span class="rank">${i + 1}</span>
+        <span aria-hidden="true" style="display:grid;place-items:center;width:32px;height:32px;border-radius:999px;color:#fff;font-weight:700;font-size:12px;background:${m.color};box-shadow:var(--ring),var(--paper-sm);">${m.name.charAt(0)}</span>
+        <div style="flex:1;">
+          <div class="name-row">
+            <span class="name">${m.name}${i === 0 ? ' <span aria-hidden="true" style="display:inline-block;animation:crownBob 2.6s ease-in-out infinite;transform-origin:center;">👑</span>' : ''}</span>
+            <span class="money-amt" style="font-size:14px;">${money(m.week)}</span>
+          </div>
+          <div class="bar"><div class="fill" style="width:${(m.week / maxAmount) * 100}%;background:${m.color};"></div></div>
+        </div>
+      </li>
+    `).join('');
+  }
+
+  // ---- Champion celebration --------------------------------------------
+  function maybeCelebrate(forceCheck) {
+    const eligible = approvedCount() >= 3 || exploredCount() >= FEATURE_CARDS.length - 2;
+    const titleEl = $('#champion-title');
+    const subEl = $('#champion-subtitle');
+    const crownEl = $('#crown');
+    const pretagEl = $('#champion-pretag');
+    if (eligible) {
+      titleEl.textContent = 'You read the whole board. Be a champion.';
+      subEl.textContent = "You've seen how it works from every angle. Time to give it a real kitchen wall.";
+      crownEl.style.display = 'block';
+      pretagEl.textContent = 'CHAMPION OF THE WEEK';
+    } else {
+      titleEl.textContent = "Be your family's champion.";
+      subEl.textContent = 'You can keep playing the demo above, or skip ahead and stake out a spot for your family.';
+      crownEl.style.display = 'none';
+      pretagEl.textContent = 'GET ON THE LIST';
+    }
+    if (forceCheck && eligible && !sessionStorage.getItem('cb-celebrated')) {
+      // Wait for the section to come into view; the IntersectionObserver
+      // below fires this with `forceCheck: true` exactly once.
+      sessionStorage.setItem('cb-celebrated', '1');
+      spawnConfetti();
+    }
+  }
+  function spawnConfetti() {
+    const layer = $('#confetti-layer');
+    if (!layer) return;
+    const colors = ['#3253D7', '#DB4646', '#E8B12A', '#3CA163', '#E07E2E', '#8B5BD9'];
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 80; i++) {
+      const span = document.createElement('span');
+      span.className = 'confetti-piece';
+      const size = 6 + Math.random() * 8;
+      span.style.left = (Math.random() * 100) + '%';
+      span.style.width = size + 'px';
+      span.style.height = (size * 0.4) + 'px';
+      span.style.background = colors[i % colors.length];
+      span.style.animationDelay = (Math.random() * 1.6) + 's';
+      span.style.setProperty('--cx', ((Math.random() - 0.5) * 600) + 'px');
+      frag.appendChild(span);
+    }
+    layer.appendChild(frag);
+    // Clean up after the animation so we don't leak DOM nodes on repeat.
+    setTimeout(() => { while (layer.firstChild) layer.removeChild(layer.firstChild); }, 5000);
+  }
+
+  // ---- One-shot render -------------------------------------------------
+  function renderAll() {
+    renderAvailable();
+    renderLanes();
+    renderApproved();
+    renderStats();
+    renderDetail();
+    renderFamilyTV();
+    maybeCelebrate(false);
+  }
+
+  // ---- Mutations -------------------------------------------------------
+  function moveCard(cardId, to) {
+    if (!FEATURE_CARDS.some((c) => c.id === cardId)) return;
+    state.placement[cardId] = to;
+    if (to === 'parent' || to === 'kid' || to === 'family') {
+      const prev = state.seenBy[cardId] || [];
+      if (!prev.includes(to)) state.seenBy[cardId] = [...prev, to];
+    }
+    if (to !== 'available') state.focused = cardId;
+    persist();
+    renderAll();
+  }
+  function focusCard(cardId) {
+    state.focused = cardId;
+    renderDetail();
+  }
+  function resetBoard() {
+    state.placement = initialPlacement();
+    state.seenBy = initialSeen();
+    state.focused = null;
+    state.autoPlaying = false;
+    sessionStorage.removeItem('cb-celebrated');
+    persist();
+    setAutoplay(false);
+    renderAll();
+  }
+
+  // ---- Drag system (pointer-based, works mouse / pen / touch) ---------
+  let dragCtx = null;
+  let downCtx = null; // tracks pointerdown for tap vs drag
+
+  const boardRoot = document.querySelector('.section-inner') && document;
+
+  function isDraggableTarget(target) {
+    const el = target.closest('[data-draggable="true"]');
+    return el && el.dataset.cardId ? el : null;
+  }
+
+  function startDrag(card, srcEl, evt) {
+    const rect = srcEl.getBoundingClientRect();
+    const clone = document.createElement('div');
+    clone.id = 'drag-clone';
+    clone.innerHTML = renderCardHtml(card, { overlay: true, accent: srcEl.style.borderLeftColor || undefined });
+    document.body.appendChild(clone);
+    clone.style.left = rect.left + 'px';
+    clone.style.top  = rect.top  + 'px';
+    clone.style.width = rect.width + 'px';
+
+    srcEl.classList.add('dragging');
+
+    dragCtx = {
+      card,
+      srcEl,
+      cloneEl: clone,
+      offsetX: evt.clientX - rect.left,
+      offsetY: evt.clientY - rect.top,
+      pointerId: evt.pointerId,
+      currentDrop: null,
+    };
+    try { srcEl.setPointerCapture(evt.pointerId); } catch { /* iOS sometimes throws */ }
+  }
+
+  function findDropAt(x, y) {
+    const stack = document.elementsFromPoint(x, y);
+    for (const el of stack) {
+      const drop = el.closest('[data-column]');
+      if (drop) return drop;
+    }
+    return null;
+  }
+
+  function moveDrag(evt) {
+    if (!dragCtx) return;
+    dragCtx.cloneEl.style.left = (evt.clientX - dragCtx.offsetX) + 'px';
+    dragCtx.cloneEl.style.top  = (evt.clientY - dragCtx.offsetY) + 'px';
+    const drop = findDropAt(evt.clientX, evt.clientY);
+    if (drop !== dragCtx.currentDrop) {
+      if (dragCtx.currentDrop) dragCtx.currentDrop.classList.remove('is-over');
+      if (drop) drop.classList.add('is-over');
+      dragCtx.currentDrop = drop;
+    }
+  }
+
+  function endDrag(evt, cancelled) {
+    if (!dragCtx) return;
+    const drop = !cancelled ? findDropAt(evt.clientX, evt.clientY) : null;
+    if (dragCtx.currentDrop) dragCtx.currentDrop.classList.remove('is-over');
+    dragCtx.cloneEl.remove();
+    dragCtx.srcEl.classList.remove('dragging');
+    const card = dragCtx.card;
+    dragCtx = null;
+    if (drop) {
+      const target = drop.dataset.column;
+      if (target) moveCard(card.id, target);
+    }
+  }
+
+  document.addEventListener('pointerdown', (evt) => {
+    if (evt.button !== undefined && evt.button !== 0) return;
+    const srcEl = isDraggableTarget(evt.target);
+    if (!srcEl) return;
+    const card = FEATURE_CARDS.find((c) => c.id === srcEl.dataset.cardId);
+    if (!card) return;
+    downCtx = { card, srcEl, x: evt.clientX, y: evt.clientY, pointerId: evt.pointerId, dragged: false };
+    // Don't start a drag yet — wait for motion to disambiguate tap from drag.
+  });
+
+  document.addEventListener('pointermove', (evt) => {
+    if (dragCtx) {
+      if (evt.pointerId === dragCtx.pointerId) moveDrag(evt);
+      return;
+    }
+    if (!downCtx) return;
+    if (evt.pointerId !== downCtx.pointerId) return;
+    const moved = Math.hypot(evt.clientX - downCtx.x, evt.clientY - downCtx.y);
+    if (moved > 5) {
+      downCtx.dragged = true;
+      startDrag(downCtx.card, downCtx.srcEl, evt);
+      // Make the first frame snap to the pointer.
+      moveDrag(evt);
+    }
+  });
+
+  document.addEventListener('pointerup', (evt) => {
+    if (dragCtx && evt.pointerId === dragCtx.pointerId) {
+      endDrag(evt, false);
+      downCtx = null;
+      return;
+    }
+    if (downCtx && evt.pointerId === downCtx.pointerId) {
+      if (!downCtx.dragged) {
+        // Tap: focus + auto-claim. If the card is in Available, send it to its
+        // best persona; if it's already in a persona lane, file it.
+        const card = downCtx.card;
+        const col = state.placement[card.id];
+        focusCard(card.id);
+        if (col === 'available') moveCard(card.id, card.bestPersona);
+        else if (col === 'parent' || col === 'kid' || col === 'family') moveCard(card.id, 'approved');
+      }
+      downCtx = null;
+    }
+  });
+
+  document.addEventListener('pointercancel', (evt) => {
+    if (dragCtx && evt.pointerId === dragCtx.pointerId) endDrag(evt, true);
+    downCtx = null;
+  });
+
+  // Keyboard path: enter / space on a focused card mirrors the tap path,
+  // and R anywhere outside an input resets the demo.
+  document.addEventListener('keydown', (evt) => {
+    const t = evt.target;
+    const inField = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+    if (inField) return;
+    if (evt.key === 'Enter' || evt.key === ' ') {
+      const focusedEl = document.activeElement && document.activeElement.closest('[data-draggable="true"]');
+      if (focusedEl && focusedEl.dataset.cardId) {
+        evt.preventDefault();
+        const card = FEATURE_CARDS.find((c) => c.id === focusedEl.dataset.cardId);
+        if (!card) return;
+        const col = state.placement[card.id];
+        focusCard(card.id);
+        if (col === 'available') moveCard(card.id, card.bestPersona);
+        else if (col !== 'approved') moveCard(card.id, 'approved');
+      }
+    } else if (evt.key === 'r' || evt.key === 'R') {
+      if (document.activeElement && document.activeElement.tagName === 'BUTTON') return;
+      resetBoard();
+    }
+  });
+
+  // ---- Auto-play tour --------------------------------------------------
+  let tourTimers = [];
+  function setAutoplay(on) {
+    state.autoPlaying = on;
+    const btn = $('#autoplay-btn');
+    btn.textContent = on ? 'Stop tour' : 'Auto-play tour ▶';
+    btn.classList.toggle('btn-primary', !on);
+    btn.classList.toggle('btn-secondary', on);
+    btn.setAttribute('aria-pressed', String(on));
+    if (!on) {
+      while (tourTimers.length) clearTimeout(tourTimers.pop());
+    }
+  }
+  function runTour() {
+    if (!state.autoPlaying) return;
+    const queue = FEATURE_CARDS.filter((c) => state.placement[c.id] === 'available').map((c) => c.id);
+    if (queue.length === 0) { setAutoplay(false); return; }
+    let i = 0;
+    const tick = () => {
+      if (!state.autoPlaying) return;
+      const id = queue[i];
+      if (!id) { setAutoplay(false); return; }
+      const card = FEATURE_CARDS.find((c) => c.id === id);
+      if (card) {
+        moveCard(card.id, card.bestPersona);
+        focusCard(card.id);
+      }
+      tourTimers.push(setTimeout(() => {
+        if (!state.autoPlaying) return;
+        if (card) moveCard(card.id, 'approved');
+        i++;
+        tourTimers.push(setTimeout(tick, 950));
+      }, 1450));
+    };
+    tick();
+  }
+  $('#autoplay-btn').addEventListener('click', () => {
+    setAutoplay(!state.autoPlaying);
+    if (state.autoPlaying) runTour();
+  });
+  $('#replay-btn').addEventListener('click', resetBoard);
+
+  // ---- Section nav -----------------------------------------------------
+  const sectionEls = SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean);
+  let activeSection = 'pitch';
+  function setActiveSection(id) {
+    if (id === activeSection) return;
+    activeSection = id;
+    const idx = SECTIONS.findIndex((s) => s.id === id);
+    const sec = SECTIONS[idx] || SECTIONS[0];
+    $('#topbar-tag-label').textContent = String(idx + 1).padStart(2, '0') + ' — ' + sec.label;
+    $('#topbar-tag-title').textContent = sec.title;
+    $$('#dots .dot-btn').forEach((b, i) => {
+      b.setAttribute('aria-current', i === idx ? 'true' : 'false');
+    });
+    if (id === 'start') maybeCelebrate(true);
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((e) => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      if (visible[0]) setActiveSection(visible[0].target.id);
+    },
+    { rootMargin: '-30% 0px -50% 0px', threshold: [0, 0.2, 0.4, 0.6] }
+  );
+  sectionEls.forEach((el) => io.observe(el));
+  $$('#dots .dot-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.section;
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Arrow keys jump between sections (skip while typing).
+  document.addEventListener('keydown', (evt) => {
+    const t = evt.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (evt.key !== 'ArrowDown' && evt.key !== 'ArrowUp' && evt.key !== 'PageDown' && evt.key !== 'PageUp') return;
+    const idx = SECTIONS.findIndex((s) => s.id === activeSection);
+    if (idx < 0) return;
+    evt.preventDefault();
+    const next = (evt.key === 'ArrowDown' || evt.key === 'PageDown')
+      ? Math.min(SECTIONS.length - 1, idx + 1)
+      : Math.max(0, idx - 1);
+    const el = document.getElementById(SECTIONS[next].id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // ---- Hero demo card loop ---------------------------------------------
+  (() => {
+    const stages = [
+      { stage: 'available', pill: '<span class="pill pill-available">AVAILABLE</span>' },
+      { stage: 'claimed',   pill: '<span class="pill pill-claimed">CLAIMED · SKYE</span>' },
+      { stage: 'pending',   pill: '<span class="pill pill-pending">PENDING</span>' },
+      { stage: 'approved',  pill: '<span class="pill pill-approved">✓ APPROVED</span>' },
+    ];
+    const card = $('#demo-card');
+    const tally = $('#demo-tally');
+    let i = 0;
+    let cents = 1900;
+    setInterval(() => {
+      i = (i + 1) % stages.length;
+      const s = stages[i];
+      card.classList.remove('claimed', 'pending', 'approved');
+      if (s.stage !== 'available') card.classList.add(s.stage);
+      // Re-query each tick: outerHTML replacement detaches the previous node,
+      // so the variable would go stale after the first cycle.
+      const pill = $('#demo-pill');
+      if (pill) {
+        pill.outerHTML = s.pill.replace('<span ', '<span id="demo-pill" ');
+      }
+      if (s.stage === 'approved') {
+        cents += 100;
+        tally.textContent = money(cents);
+        tally.classList.remove('tick');
+        // Force reflow so the animation restarts on the next class add.
+        void tally.offsetWidth;
+        tally.classList.add('tick');
+      }
+    }, 1900);
+  })();
+
+  // ---- Waitlist form ---------------------------------------------------
+  $('#waitlist-form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const email = $('#waitlist-email').value.trim();
+    const family = $('#waitlist-family').value.trim();
+    if (!email) return;
+    try {
+      const raw = localStorage.getItem('cb-waitlist');
+      const list = raw ? JSON.parse(raw) : [];
+      list.push({ email, family, at: new Date().toISOString() });
+      localStorage.setItem('cb-waitlist', JSON.stringify(list));
+    } catch { /* private mode — silently no-op, still show the confirmation */ }
+    const url = window.CHOREBOARD_WAITLIST_URL;
+    if (url) {
+      fetch(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, family }),
+      }).catch(() => undefined);
+    }
+    const form = $('#waitlist-form');
+    const done = document.createElement('div');
+    done.className = 'waitlist-done';
+    done.innerHTML = `
+      <div class="page-tag">YOU'RE ON THE LIST</div>
+      <p style="font-size:14px;color:var(--ink-900);">
+        Thanks. We'll send the invite to <b>${escapeHtml(email)}</b> the moment a slot opens up.
+      </p>
+    `;
+    form.replaceWith(done);
+  });
+
+  // ---- Boot ------------------------------------------------------------
+  renderAll();
+  // First in-view check (in case the user lands directly on #start).
+  if (location.hash) {
+    const id = location.hash.slice(1);
+    if (SECTIONS.some((s) => s.id === id)) setActiveSection(id);
+  }
+})();
+</script>
+</body>
+</html>
