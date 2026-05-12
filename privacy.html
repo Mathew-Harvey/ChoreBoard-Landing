@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#F6EED5" />
+<title>Privacy Policy — ChoreBoard</title>
+<meta name="description" content="How ChoreBoard handles family data: what we collect, why, who sees it, how long we keep it, and how to delete it." />
+<meta property="og:title" content="Privacy Policy — ChoreBoard" />
+<meta property="og:description" content="How ChoreBoard handles family data: what we collect, why, who sees it, how long we keep it, and how to delete it." />
+<meta property="og:type" content="website" />
+<link rel="canonical" href="https://choreboard.io/privacy.html" />
+<link rel="preconnect" href="https://rsms.me/" />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="7" fill="%23E07E2E" stroke="%2310182B" stroke-width="3"/><text x="16" y="22" text-anchor="middle" font-size="18" font-family="system-ui" font-weight="800" fill="white">C</text></svg>' />
+<style>
+/* ---------------------------------------------------------------------------
+   ChoreBoard legal page — single-file build.
+   Mirrors the design tokens of the landing index.html and the app's Tailwind
+   config so this reads as part of the product, not a generic boilerplate
+   policy stapled onto the side.
+   --------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html, body { height: 100%; }
+html { scroll-behavior: smooth; }
+body { overscroll-behavior: none; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+
+:root {
+  --cream-50:  #FBF6E6;
+  --cream-100: #F6EED5;
+  --cream-200: #F0E5C0;
+  --paper:     #FBFAF4;
+  --ink-900:   #10182B;
+  --ink-800:   #1A2238;
+  --ink-700:   #2A3350;
+  --ink-500:   #5B6072;
+  --ink-400:   #7A7F8E;
+  --money:     #0F6E37;
+  --accent-blue:   #3253D7;
+  --accent-orange: #E07E2E;
+  --paper-sm: 2px 2px 0 0 rgba(16,24,43,0.9);
+  --paper-md: 4px 4px 0 0 rgba(16,24,43,0.9);
+  --ring:     0 0 0 2px var(--ink-900);
+  --display:  'Inter Tight', 'Inter Display', 'Inter', system-ui, sans-serif;
+  --sans:     'Inter Tight', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+  font-family: var(--sans);
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  text-rendering: optimizeLegibility;
+  background: var(--cream-100);
+  color: var(--ink-900);
+  line-height: 1.65;
+  font-size: 16px;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(255, 232, 178, 0.40), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%,  rgba(255, 213, 175, 0.30), transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink-900);
+}
+
+a.link { color: var(--ink-900); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: rgba(16,24,43,0.25); }
+a.link:hover { text-decoration-color: var(--ink-900); }
+
+/* === Top bar ========================================================= */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 2px solid var(--ink-900);
+  background: rgba(246, 238, 213, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+}
+@media (min-width: 640px) { .topbar-inner { padding: 16px 28px; } }
+.wordmark { display: inline-flex; align-items: center; gap: 10px; }
+.wordmark-glyph {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  background: var(--accent-orange);
+  color: #fff;
+  font-weight: 800;
+  border-radius: 8px;
+  box-shadow: var(--ring), var(--paper-sm);
+  font-size: 14px;
+}
+.wordmark-text { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-size: 20px; }
+.topbar-links { display: flex; align-items: center; gap: 4px; font-size: 13px; }
+.topbar-links a {
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: var(--ink-700);
+  font-weight: 600;
+}
+.topbar-links a:hover { background: rgba(16,24,43,0.05); color: var(--ink-900); }
+.topbar-links a[aria-current="page"] { background: var(--ink-900); color: var(--cream-50); }
+
+/* === Page chrome ===================================================== */
+.page-tag {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-500);
+}
+.shell {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+@media (min-width: 640px) { .shell { padding: 56px 28px 96px; } }
+
+.hero {
+  margin-bottom: 28px;
+}
+.hero h1 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  margin-top: 6px;
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--ink-500);
+}
+.hero-meta strong { color: var(--ink-900); }
+
+.summary-card {
+  background: var(--paper);
+  border-radius: 22px;
+  box-shadow: var(--ring), var(--paper-md);
+  padding: 22px 24px;
+  margin: 24px 0 36px;
+}
+.summary-card h2 {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+  margin-bottom: 10px;
+}
+.summary-card ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.summary-card li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  color: var(--ink-700);
+}
+.summary-card li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  background: var(--money);
+  box-shadow: 0 0 0 1.5px rgba(16,24,43,0.85);
+}
+
+.toc {
+  background: var(--cream-50);
+  border-radius: 16px;
+  box-shadow: var(--ring);
+  padding: 18px 22px;
+  margin-bottom: 36px;
+}
+.toc h2 {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-bottom: 10px;
+}
+.toc ol {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px 16px;
+  font-size: 14px;
+  counter-reset: toc;
+  list-style: none;
+}
+@media (min-width: 640px) { .toc ol { grid-template-columns: 1fr 1fr; } }
+.toc li { counter-increment: toc; }
+.toc a {
+  display: block;
+  padding: 4px 0;
+  color: var(--ink-700);
+  font-weight: 600;
+}
+.toc a::before {
+  content: counter(toc, decimal-leading-zero) ' · ';
+  color: var(--ink-400);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.toc a:hover { color: var(--ink-900); }
+
+/* === Body content ==================================================== */
+section.policy {
+  margin-top: 36px;
+  scroll-margin-top: 80px;
+}
+section.policy h2 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+section.policy h2 .num {
+  font-family: var(--display);
+  font-size: 0.7em;
+  color: var(--ink-400);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+section.policy h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-700);
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+section.policy p,
+section.policy ul,
+section.policy ol {
+  color: var(--ink-700);
+  font-size: 15.5px;
+}
+section.policy p + p,
+section.policy p + ul,
+section.policy p + ol,
+section.policy ul + p,
+section.policy ol + p {
+  margin-top: 12px;
+}
+section.policy ul.bul,
+section.policy ol.num {
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+section.policy ul.bul { list-style: disc; }
+section.policy ol.num { list-style: decimal; }
+section.policy strong { color: var(--ink-900); }
+section.policy code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.92em;
+  background: rgba(16,24,43,0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+table.processors {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  font-size: 14.5px;
+  background: var(--paper);
+  border-radius: 14px;
+  box-shadow: var(--ring);
+  overflow: hidden;
+}
+table.processors th,
+table.processors td {
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(16,24,43,0.1);
+}
+table.processors th {
+  background: var(--cream-200);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-700);
+}
+table.processors tr:last-child td { border-bottom: none; }
+
+.callout {
+  background: var(--cream-50);
+  border-radius: 16px;
+  box-shadow: var(--ring);
+  padding: 16px 20px;
+  margin-top: 16px;
+  font-size: 15px;
+  color: var(--ink-700);
+}
+.callout strong { color: var(--ink-900); }
+
+/* === Footer (compact) ================================================ */
+footer.legal-foot {
+  border-top: 2px solid rgba(16,24,43,0.15);
+  background: var(--cream-100);
+  padding: 28px 20px 40px;
+  margin-top: 60px;
+}
+.legal-foot-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+@media (min-width: 640px) { .legal-foot-inner { flex-direction: row; align-items: center; justify-content: space-between; } }
+.legal-foot-links { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-700); }
+.legal-foot-links a:hover { text-decoration: underline; }
+.legal-foot-meta { font-size: 12px; color: var(--ink-500); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="/" aria-label="ChoreBoard home">
+      <span class="wordmark-glyph" aria-hidden="true">C</span>
+      <span class="wordmark-text">ChoreBoard</span>
+    </a>
+    <nav class="topbar-links" aria-label="Legal pages">
+      <a href="/">Home</a>
+      <a href="/privacy.html" aria-current="page">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell">
+  <div class="hero">
+    <div class="page-tag">LEGAL · PRIVACY POLICY</div>
+    <h1>Privacy Policy</h1>
+    <div class="hero-meta">
+      <span><strong>Effective:</strong> 12 May 2026</span>
+      <span><strong>Operator:</strong> ChoreBoard, Australia</span>
+      <span><strong>Contact:</strong> <a class="link" href="mailto:privacy@choreboard.io">privacy@choreboard.io</a></span>
+    </div>
+  </div>
+
+  <div class="summary-card" aria-label="Plain-English summary">
+    <h2>The short version</h2>
+    <ul>
+      <li>ChoreBoard stores the data you and your family enter so the app works. We don't sell it and we don't run advertising.</li>
+      <li>Parents sign in with email + password. Kids sign in with a 4-digit PIN added by a parent. Both are stored as Argon2 hashes — we never see them in plain text.</li>
+      <li>We use a small set of standard SaaS sub-processors for hosting, email, analytics, and crash reporting. They're listed in §5.</li>
+      <li>You can export or delete your family's data any time. Email <a class="link" href="mailto:privacy@choreboard.io">privacy@choreboard.io</a>.</li>
+      <li>ChoreBoard is operated from Australia and complies with the Australian Privacy Principles under the Privacy Act 1988.</li>
+    </ul>
+  </div>
+
+  <nav class="toc" aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#who">Who we are</a></li>
+      <li><a href="#what">What we collect</a></li>
+      <li><a href="#kids">Children's data</a></li>
+      <li><a href="#use">How we use it</a></li>
+      <li><a href="#processors">Sub-processors</a></li>
+      <li><a href="#cookies">Cookies and local storage</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#retention">Data retention</a></li>
+      <li><a href="#rights">Your rights</a></li>
+      <li><a href="#transfers">International transfers</a></li>
+      <li><a href="#changes">Changes to this policy</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ol>
+  </nav>
+
+  <section class="policy" id="who">
+    <h2><span class="num">01</span> Who we are</h2>
+    <p>
+      ChoreBoard ("we", "us", "our") is a family-dashboard SaaS operated from
+      Australia. We provide a web app where parents and kids in a single
+      household track and complete chores together, and a marketing site at
+      <a class="link" href="https://choreboard.io">choreboard.io</a>.
+    </p>
+    <p>
+      For privacy questions or to exercise any of the rights described below,
+      write to <a class="link" href="mailto:privacy@choreboard.io">privacy@choreboard.io</a>.
+    </p>
+  </section>
+
+  <section class="policy" id="what">
+    <h2><span class="num">02</span> What we collect</h2>
+
+    <h3>From parents (account holders)</h3>
+    <ul class="bul">
+      <li>Email address, name, password (stored as an Argon2id hash, never plain text).</li>
+      <li>Family name and timezone.</li>
+      <li>Optional web-push subscription details (only if you install the PWA and opt in to notifications).</li>
+      <li>Payout-day and payout-time preferences.</li>
+    </ul>
+
+    <h3>About kids in the family (entered by a parent)</h3>
+    <ul class="bul">
+      <li>Display name, avatar, colour, and a 4-digit PIN (stored as an Argon2id hash).</li>
+      <li>Optional personal goal name and target amount.</li>
+    </ul>
+    <p>Kids do not have an email address on file, do not receive email or push notifications from us, and cannot create their own ChoreBoard account.</p>
+
+    <h3>Activity data created as you use the product</h3>
+    <ul class="bul">
+      <li>The chore catalog (chore names, dollar values, cadences) you set up.</li>
+      <li>Chore instances — created, claimed, submitted, approved, or missed timestamps and the member who took the action.</li>
+      <li>Optional photos attached to chore submissions.</li>
+      <li>Ledger entries, weekly tallies, badges, streaks, XP, and goals.</li>
+    </ul>
+
+    <h3>Automatically collected</h3>
+    <ul class="bul">
+      <li>Server logs (IP, user-agent, request path, response status) used for security and debugging.</li>
+      <li>A first-party HTTP-only cookie (<code>cb_session</code>) used to keep you signed in.</li>
+      <li>Pseudonymous product analytics (which screens you opened, which features you used). No advertising pixels, no third-party trackers.</li>
+      <li>Crash reports (stack traces, browser/device model) when something goes wrong.</li>
+    </ul>
+  </section>
+
+  <section class="policy" id="kids">
+    <h2><span class="num">03</span> Children's data</h2>
+    <p>
+      ChoreBoard is designed for households where parents add their own
+      children. We treat that responsibility seriously.
+    </p>
+    <ul class="bul">
+      <li>Kids sign in with a 4-digit PIN selected by a parent. They never enter an email address.</li>
+      <li>Kids cannot create their own ChoreBoard account. Only a parent who has accepted these terms can add a kid profile.</li>
+      <li>The Owner of a family is the controller of all kid data in their household and can delete any kid profile and its history at any time from <code>/admin</code>.</li>
+      <li>We do not show advertising to anyone. We do not sell or share kid data with anyone for marketing purposes.</li>
+      <li>If you believe a kid profile has been added without parental consent, email <a class="link" href="mailto:privacy@choreboard.io">privacy@choreboard.io</a> and we will remove it within 7 days.</li>
+    </ul>
+  </section>
+
+  <section class="policy" id="use">
+    <h2><span class="num">04</span> How we use it</h2>
+    <ul class="bul">
+      <li>Run the product (showing the board, materialising recurring chores, sending push notifications you opted in to, etc.).</li>
+      <li>Authenticate sign-in and keep your session alive.</li>
+      <li>Send transactional email — sign-up verification, password reset, weekly payout summary. We don't run marketing email campaigns.</li>
+      <li>Improve the product (which features get used, where people get stuck).</li>
+      <li>Investigate bugs, abuse, and security incidents.</li>
+      <li>Comply with legal obligations.</li>
+    </ul>
+    <div class="callout">
+      We <strong>do not</strong> sell your data, share it with advertisers, or
+      use it to build profiles for marketing — yours or your kids'.
+    </div>
+  </section>
+
+  <section class="policy" id="processors">
+    <h2><span class="num">05</span> Sub-processors</h2>
+    <p>
+      We rely on a small set of vendors to run the service. Each one only sees
+      the data they need to do their job, under a written data-processing
+      agreement. The list below is current as of the effective date.
+    </p>
+    <table class="processors">
+      <thead>
+        <tr>
+          <th>Vendor</th>
+          <th>Data they see</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Render (USA)</td>
+          <td>Database, application logs</td>
+          <td>Hosting (Postgres + web server)</td>
+        </tr>
+        <tr>
+          <td>Cloudflare R2 (USA / EU)</td>
+          <td>Photos you choose to attach</td>
+          <td>Object storage for chore photos</td>
+        </tr>
+        <tr>
+          <td>Resend (USA)</td>
+          <td>Email address, transactional content</td>
+          <td>Sending sign-up, reset, and payout-summary email</td>
+        </tr>
+        <tr>
+          <td>PostHog (USA / EU)</td>
+          <td>Pseudonymous product events</td>
+          <td>Product analytics</td>
+        </tr>
+        <tr>
+          <td>Sentry (USA)</td>
+          <td>Error stack traces, user pseudonym</td>
+          <td>Crash reporting</td>
+        </tr>
+        <tr>
+          <td>Apple / Google / Mozilla push gateways</td>
+          <td>Encrypted push payloads</td>
+          <td>Delivering opt-in browser notifications</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      We'll update this list before adding a new sub-processor that handles
+      family data. The current list is also published at
+      <code>/privacy.html</code> on the marketing site.
+    </p>
+  </section>
+
+  <section class="policy" id="cookies">
+    <h2><span class="num">06</span> Cookies and local storage</h2>
+    <p>
+      We use a single first-party cookie, <code>cb_session</code>, set as
+      <code>HttpOnly; Secure; SameSite=Lax</code>. It contains only a session
+      identifier and is used to keep you signed in. We don't set marketing or
+      third-party tracking cookies.
+    </p>
+    <p>
+      We also store a small amount of data in your browser's
+      <code>localStorage</code> so the app can remember which family device
+      you're on (for example, the family roster on the kid sign-in screen).
+      That data never leaves your browser.
+    </p>
+  </section>
+
+  <section class="policy" id="security">
+    <h2><span class="num">07</span> Security</h2>
+    <ul class="bul">
+      <li>Passwords and PINs are hashed with Argon2id before being written to disk.</li>
+      <li>Sessions are server-side. Session cookies are HTTP-only and SameSite=Lax.</li>
+      <li>All traffic is HTTPS in production.</li>
+      <li>Photos are uploaded directly to Cloudflare R2 over presigned URLs and served only over HTTPS.</li>
+      <li>We follow the principle of least privilege internally.</li>
+    </ul>
+    <p>
+      No system is perfectly secure. We commit to keeping at it and to telling
+      affected families promptly if something goes wrong.
+    </p>
+  </section>
+
+  <section class="policy" id="retention">
+    <h2><span class="num">08</span> Data retention</h2>
+    <ul class="bul">
+      <li><strong>Active families:</strong> we keep your data while your account is active.</li>
+      <li><strong>Inactive families:</strong> if no parent has signed in for 24 months, we'll email the Owner and then delete the family after 30 days.</li>
+      <li><strong>Photos attached to chores:</strong> retained for 12 months by default, then auto-deleted. The Owner can change this in <code>/admin</code>.</li>
+      <li><strong>Server logs:</strong> rolling 30 days.</li>
+      <li><strong>Backups:</strong> rolling 30 days. Any deletion you request will replicate to backups within that window.</li>
+    </ul>
+  </section>
+
+  <section class="policy" id="rights">
+    <h2><span class="num">09</span> Your rights</h2>
+    <p>You can:</p>
+    <ul class="bul">
+      <li><strong>Access</strong> the data we hold about your family by signing in — the app shows you all of it.</li>
+      <li><strong>Export</strong> the family ledger as CSV from the admin screen, and request a full data export by emailing us.</li>
+      <li><strong>Correct</strong> any record from the admin screens.</li>
+      <li><strong>Delete</strong> your account and your family at any time. Email <a class="link" href="mailto:privacy@choreboard.io">privacy@choreboard.io</a> and we'll action within 30 days.</li>
+      <li><strong>Object</strong> to product analytics — tell us at the same address and we'll exclude your account.</li>
+      <li><strong>Lodge a complaint</strong> with the Office of the Australian Information Commissioner (OAIC) if you believe we've mishandled your data: <a class="link" href="https://www.oaic.gov.au/" rel="noreferrer noopener" target="_blank">oaic.gov.au</a>.</li>
+    </ul>
+    <p>
+      If you are in the EU/UK, the same rights are available to you under the
+      GDPR/UK GDPR. We process EU/UK personal data on the basis of contract
+      (running the product you signed up for) and legitimate interest (security
+      and product improvement).
+    </p>
+  </section>
+
+  <section class="policy" id="transfers">
+    <h2><span class="num">10</span> International transfers</h2>
+    <p>
+      Our hosting and sub-processors may store data in the United States and
+      Europe. Where data leaves Australia we rely on contractual safeguards
+      consistent with the Australian Privacy Principles and, for EU data,
+      Standard Contractual Clauses.
+    </p>
+  </section>
+
+  <section class="policy" id="changes">
+    <h2><span class="num">11</span> Changes to this policy</h2>
+    <p>
+      We'll post material changes here and email the Owner of each family at
+      least 14 days before they take effect. Trivial fixes (typos, vendor name
+      updates, contact addresses) take effect immediately.
+    </p>
+  </section>
+
+  <section class="policy" id="contact">
+    <h2><span class="num">12</span> Contact</h2>
+    <ul class="bul">
+      <li><a class="link" href="mailto:privacy@choreboard.io">privacy@choreboard.io</a> — privacy questions and rights requests.</li>
+      <li><a class="link" href="mailto:support@choreboard.io">support@choreboard.io</a> — everything else.</li>
+      <li>ChoreBoard, Australia.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="legal-foot">
+  <div class="legal-foot-inner">
+    <div class="legal-foot-meta">
+      © <span id="year"></span> ChoreBoard · made in Australia
+    </div>
+    <nav class="legal-foot-links" aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+      <a href="https://app.choreboard.io">Sign in</a>
+      <a href="mailto:support@choreboard.io">support@choreboard.io</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = String(new Date().getFullYear());
+</script>
+
+</body>
+</html>

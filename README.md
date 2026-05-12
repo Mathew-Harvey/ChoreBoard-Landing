@@ -39,7 +39,7 @@ Override these by setting globals on `window` **before** the inline script runs
 
 | Global                          | Effect                                                                                  |
 | ------------------------------- | --------------------------------------------------------------------------------------- |
-| `window.CHOREBOARD_APP_URL`     | URL the "Sign in" links target. Defaults to `https://app.choreboard.au`.                |
+| `window.CHOREBOARD_APP_URL`     | URL the "Sign in" links target. Defaults to `https://app.choreboard.io`. The native iOS / Android apps (when published) deep-link from this URL via Universal Links / App Links. |
 | `window.CHOREBOARD_WAITLIST_URL`| If set, the waitlist form `POST`s `{ email, family }` to this URL on submit (in addition to writing to `localStorage`). |
 
 ## Sections
@@ -81,9 +81,29 @@ Non-annoyance affordances baked in:
 
 ## Deploying
 
-Drop `index.html` on any static host: Cloudflare Pages, Netlify, GitHub Pages,
-Render Static Site, Vercel, an S3 bucket, or behind Fastify's `static` plugin
-sitting next to `ChoreBoard-Api`.
+Production hostname is **`https://choreboard.io`**, fronted by Cloudflare and
+served from Cloudflare Pages. The web app lives at `https://app.choreboard.io`
+and the API at `https://api.choreboard.io` (both on the same Render service);
+this site links out to `app.` for sign-in and embeds links to the App Store
+and Play Store once those listings go live.
+
+Drop `index.html` on any static host: Cloudflare Pages (preferred), Netlify,
+GitHub Pages, Render Static Site, Vercel, an S3 bucket, or behind Fastify's
+`static` plugin sitting next to `ChoreBoard-Api`.
 
 For GitHub Pages with a custom domain, drop a `CNAME` file in next to
-`index.html` (the same pattern `AppHub-Landing` uses).
+`index.html`. For Cloudflare Pages, set the custom domain in the Pages project
+settings — no `CNAME` file needed.
+
+### App Store / Play Store deep-link files
+
+Once the native apps are submitted, the following files need to be served from
+**`https://app.choreboard.io`** (not from this site) so iOS Universal Links
+and Android App Links open the app instead of the browser:
+
+- `https://app.choreboard.io/.well-known/apple-app-site-association`
+- `https://app.choreboard.io/.well-known/assetlinks.json`
+
+Those are served by the API process (`ChoreBoard-Api`), not by this static
+site. The marketing pages here just link to `https://app.choreboard.io` and
+let the OS resolve.

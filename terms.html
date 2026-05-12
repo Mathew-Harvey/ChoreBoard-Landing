@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#F6EED5" />
+<title>Terms of Service — ChoreBoard</title>
+<meta name="description" content="The deal: who can use ChoreBoard, what you're responsible for, what we're responsible for, and how disputes work." />
+<meta property="og:title" content="Terms of Service — ChoreBoard" />
+<meta property="og:description" content="The deal: who can use ChoreBoard, what you're responsible for, what we're responsible for, and how disputes work." />
+<meta property="og:type" content="website" />
+<link rel="canonical" href="https://choreboard.io/terms.html" />
+<link rel="preconnect" href="https://rsms.me/" />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="2" y="2" width="28" height="28" rx="7" fill="%23E07E2E" stroke="%2310182B" stroke-width="3"/><text x="16" y="22" text-anchor="middle" font-size="18" font-family="system-ui" font-weight="800" fill="white">C</text></svg>' />
+<style>
+/* ---------------------------------------------------------------------------
+   Same design tokens as privacy.html so the two pages render as siblings.
+   Kept inline so deployment stays "drop these files on a static host" simple.
+   --------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+html, body { height: 100%; }
+html { scroll-behavior: smooth; }
+body { overscroll-behavior: none; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+
+:root {
+  --cream-50:  #FBF6E6;
+  --cream-100: #F6EED5;
+  --cream-200: #F0E5C0;
+  --paper:     #FBFAF4;
+  --ink-900:   #10182B;
+  --ink-800:   #1A2238;
+  --ink-700:   #2A3350;
+  --ink-500:   #5B6072;
+  --ink-400:   #7A7F8E;
+  --money:     #0F6E37;
+  --accent-blue:   #3253D7;
+  --accent-orange: #E07E2E;
+  --accent-red:    #DB4646;
+  --paper-sm: 2px 2px 0 0 rgba(16,24,43,0.9);
+  --paper-md: 4px 4px 0 0 rgba(16,24,43,0.9);
+  --ring:     0 0 0 2px var(--ink-900);
+  --display:  'Inter Tight', 'Inter Display', 'Inter', system-ui, sans-serif;
+  --sans:     'Inter Tight', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+  font-family: var(--sans);
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  text-rendering: optimizeLegibility;
+  background: var(--cream-100);
+  color: var(--ink-900);
+  line-height: 1.65;
+  font-size: 16px;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(255, 232, 178, 0.40), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%,  rgba(255, 213, 175, 0.30), transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink-900);
+}
+
+a.link { color: var(--ink-900); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: rgba(16,24,43,0.25); }
+a.link:hover { text-decoration-color: var(--ink-900); }
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 2px solid var(--ink-900);
+  background: rgba(246, 238, 213, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+}
+@media (min-width: 640px) { .topbar-inner { padding: 16px 28px; } }
+.wordmark { display: inline-flex; align-items: center; gap: 10px; }
+.wordmark-glyph {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  background: var(--accent-orange);
+  color: #fff;
+  font-weight: 800;
+  border-radius: 8px;
+  box-shadow: var(--ring), var(--paper-sm);
+  font-size: 14px;
+}
+.wordmark-text { font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; font-size: 20px; }
+.topbar-links { display: flex; align-items: center; gap: 4px; font-size: 13px; }
+.topbar-links a {
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: var(--ink-700);
+  font-weight: 600;
+}
+.topbar-links a:hover { background: rgba(16,24,43,0.05); color: var(--ink-900); }
+.topbar-links a[aria-current="page"] { background: var(--ink-900); color: var(--cream-50); }
+
+.page-tag {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-500);
+}
+.shell {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+@media (min-width: 640px) { .shell { padding: 56px 28px 96px; } }
+
+.hero { margin-bottom: 28px; }
+.hero h1 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  margin-top: 6px;
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--ink-500);
+}
+.hero-meta strong { color: var(--ink-900); }
+
+.summary-card {
+  background: var(--paper);
+  border-radius: 22px;
+  box-shadow: var(--ring), var(--paper-md);
+  padding: 22px 24px;
+  margin: 24px 0 36px;
+}
+.summary-card h2 {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+  margin-bottom: 10px;
+}
+.summary-card ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.summary-card li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  color: var(--ink-700);
+}
+.summary-card li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  background: var(--accent-blue);
+  box-shadow: 0 0 0 1.5px rgba(16,24,43,0.85);
+}
+
+.toc {
+  background: var(--cream-50);
+  border-radius: 16px;
+  box-shadow: var(--ring);
+  padding: 18px 22px;
+  margin-bottom: 36px;
+}
+.toc h2 {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-bottom: 10px;
+}
+.toc ol {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px 16px;
+  font-size: 14px;
+  counter-reset: toc;
+  list-style: none;
+}
+@media (min-width: 640px) { .toc ol { grid-template-columns: 1fr 1fr; } }
+.toc li { counter-increment: toc; }
+.toc a {
+  display: block;
+  padding: 4px 0;
+  color: var(--ink-700);
+  font-weight: 600;
+}
+.toc a::before {
+  content: counter(toc, decimal-leading-zero) ' · ';
+  color: var(--ink-400);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.toc a:hover { color: var(--ink-900); }
+
+section.policy {
+  margin-top: 36px;
+  scroll-margin-top: 80px;
+}
+section.policy h2 {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+section.policy h2 .num {
+  font-family: var(--display);
+  font-size: 0.7em;
+  color: var(--ink-400);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+section.policy h3 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-700);
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+section.policy p,
+section.policy ul,
+section.policy ol {
+  color: var(--ink-700);
+  font-size: 15.5px;
+}
+section.policy p + p,
+section.policy p + ul,
+section.policy p + ol,
+section.policy ul + p,
+section.policy ol + p {
+  margin-top: 12px;
+}
+section.policy ul.bul,
+section.policy ol.num {
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+section.policy ul.bul { list-style: disc; }
+section.policy ol.num { list-style: decimal; }
+section.policy strong { color: var(--ink-900); }
+section.policy code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.92em;
+  background: rgba(16,24,43,0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.callout {
+  background: var(--cream-50);
+  border-radius: 16px;
+  box-shadow: var(--ring);
+  padding: 16px 20px;
+  margin-top: 16px;
+  font-size: 15px;
+  color: var(--ink-700);
+}
+.callout strong { color: var(--ink-900); }
+.callout--warn { background: rgba(219, 70, 70, 0.08); }
+.callout--warn strong { color: var(--accent-red); }
+
+footer.legal-foot {
+  border-top: 2px solid rgba(16,24,43,0.15);
+  background: var(--cream-100);
+  padding: 28px 20px 40px;
+  margin-top: 60px;
+}
+.legal-foot-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+@media (min-width: 640px) { .legal-foot-inner { flex-direction: row; align-items: center; justify-content: space-between; } }
+.legal-foot-links { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-700); }
+.legal-foot-links a:hover { text-decoration: underline; }
+.legal-foot-meta { font-size: 12px; color: var(--ink-500); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="/" aria-label="ChoreBoard home">
+      <span class="wordmark-glyph" aria-hidden="true">C</span>
+      <span class="wordmark-text">ChoreBoard</span>
+    </a>
+    <nav class="topbar-links" aria-label="Legal pages">
+      <a href="/">Home</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html" aria-current="page">Terms</a>
+    </nav>
+  </div>
+</header>
+
+<main class="shell">
+  <div class="hero">
+    <div class="page-tag">LEGAL · TERMS OF SERVICE</div>
+    <h1>Terms of Service</h1>
+    <div class="hero-meta">
+      <span><strong>Effective:</strong> 12 May 2026</span>
+      <span><strong>Operator:</strong> ChoreBoard, Australia</span>
+      <span><strong>Contact:</strong> <a class="link" href="mailto:legal@choreboard.io">legal@choreboard.io</a></span>
+    </div>
+  </div>
+
+  <div class="summary-card" aria-label="Plain-English summary">
+    <h2>The short version</h2>
+    <ul>
+      <li>These Terms cover your use of ChoreBoard at <a class="link" href="https://choreboard.io">choreboard.io</a> and <a class="link" href="https://app.choreboard.io">app.choreboard.io</a>.</li>
+      <li>An adult creates the family account (the <strong>Owner</strong>) and accepts these Terms on behalf of every member of their household.</li>
+      <li>ChoreBoard is a tracker. It does not move money. Dollars in the app are owed by one human in the household to another, settled by their own arrangement.</li>
+      <li>v1 is in closed beta. We can change features, add a paid plan later, and (rarely) take the service down for maintenance.</li>
+      <li>If something goes wrong, our liability is limited to what you've paid us in the last 12 months — which today is $0.</li>
+    </ul>
+  </div>
+
+  <nav class="toc" aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#agreement">The agreement</a></li>
+      <li><a href="#eligibility">Eligibility</a></li>
+      <li><a href="#accounts">Accounts and roles</a></li>
+      <li><a href="#use">Acceptable use</a></li>
+      <li><a href="#money">Money is between humans</a></li>
+      <li><a href="#kids">Children's accounts</a></li>
+      <li><a href="#beta">Beta and changes to the service</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#content">Your content</a></li>
+      <li><a href="#ip">Our intellectual property</a></li>
+      <li><a href="#termination">Termination</a></li>
+      <li><a href="#disclaimers">Disclaimers</a></li>
+      <li><a href="#liability">Limitation of liability</a></li>
+      <li><a href="#indemnity">Indemnity</a></li>
+      <li><a href="#law">Governing law</a></li>
+      <li><a href="#changes">Changes to these terms</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ol>
+  </nav>
+
+  <section class="policy" id="agreement">
+    <h2><span class="num">01</span> The agreement</h2>
+    <p>
+      These Terms of Service ("<strong>Terms</strong>") form a contract between
+      you and ChoreBoard ("<strong>we</strong>", "<strong>us</strong>",
+      "<strong>our</strong>") for your use of the ChoreBoard service: the
+      marketing site at <a class="link" href="https://choreboard.io">choreboard.io</a>,
+      the web app at <a class="link" href="https://app.choreboard.io">app.choreboard.io</a>,
+      and any installed PWA versions of either ("<strong>the Service</strong>").
+    </p>
+    <p>
+      By creating an account, signing in, or otherwise using the Service, you
+      accept these Terms and our
+      <a class="link" href="/privacy.html">Privacy Policy</a>. If you don't
+      accept them, don't use the Service.
+    </p>
+  </section>
+
+  <section class="policy" id="eligibility">
+    <h2><span class="num">02</span> Eligibility</h2>
+    <p>
+      You must be at least 18 years old (or the age of majority in your
+      jurisdiction, whichever is higher) to create a ChoreBoard account. By
+      signing up, you confirm:
+    </p>
+    <ul class="bul">
+      <li>You are an adult.</li>
+      <li>You have authority to add the other members of your household to the Service.</li>
+      <li>You have the consent of any other parent or guardian to add their children.</li>
+      <li>You will not use the Service for any purpose that is illegal in your jurisdiction.</li>
+    </ul>
+  </section>
+
+  <section class="policy" id="accounts">
+    <h2><span class="num">03</span> Accounts and roles</h2>
+    <ul class="bul">
+      <li><strong>Owner</strong> — the parent who created the account. Has admin rights and (later, when paid plans launch) billing.</li>
+      <li><strong>Parent</strong> — can approve chores, edit the catalog, manage members, and view the ledger.</li>
+      <li><strong>Kid</strong> — added by a parent. Signs in with a 4-digit PIN. Can claim and submit chores but cannot self-approve.</li>
+    </ul>
+    <p>
+      You are responsible for keeping your password and any parent PINs
+      confidential. If you suspect they have been used by someone else, write
+      to <a class="link" href="mailto:security@choreboard.io">security@choreboard.io</a> and we'll help you reset.
+    </p>
+  </section>
+
+  <section class="policy" id="use">
+    <h2><span class="num">04</span> Acceptable use</h2>
+    <p>Don't use ChoreBoard to:</p>
+    <ul class="bul">
+      <li>Harass, bully, or shame any household member.</li>
+      <li>Upload illegal content, including any sexual content involving a minor — we will report this to the relevant authority and terminate the account immediately.</li>
+      <li>Reverse-engineer, scrape, or load-test the Service, except as expressly permitted by law.</li>
+      <li>Re-sell ChoreBoard, run it as a service for someone else's family, or wrap it in another product without our written agreement.</li>
+      <li>Require a child to perform chores beyond what is age-appropriate or beyond what is permitted by the law applicable to their location.</li>
+      <li>Attempt to bypass any security or rate limiting.</li>
+    </ul>
+  </section>
+
+  <section class="policy" id="money">
+    <h2><span class="num">05</span> Money is between humans</h2>
+    <div class="callout callout--warn">
+      <strong>Important:</strong> ChoreBoard is a tracker. It is
+      <strong>not</strong> a payment processor and it does <strong>not</strong>
+      move money between accounts.
+    </div>
+    <p>
+      ChoreBoard tracks dollar amounts associated with chores. All payouts are
+      settled by the household — by cash, bank transfer, or any other
+      arrangement you choose — outside of ChoreBoard. The "ledger" and "paid"
+      status are bookkeeping features only.
+    </p>
+    <p>
+      You release ChoreBoard from any dispute about whether a chore was
+      actually completed, whether a payout was made, or whether the dollar
+      value was fair. Those are family decisions and we just record what was
+      entered. If you need to correct a mistake, the Owner can edit any ledger
+      entry from <code>/admin</code>.
+    </p>
+  </section>
+
+  <section class="policy" id="kids">
+    <h2><span class="num">06</span> Children's accounts (parental responsibility)</h2>
+    <ul class="bul">
+      <li>A parent who adds a child to ChoreBoard is responsible for that child's use of the Service.</li>
+      <li>The Owner can review, edit, or delete any kid's record at any time from <code>/admin</code>.</li>
+      <li>We will honour requests from a parent to delete a kid's data within 30 days. Email <a class="link" href="mailto:privacy@choreboard.io">privacy@choreboard.io</a>.</li>
+      <li>We do not communicate with children directly. Kids do not receive email, push notifications, or marketing of any kind from us.</li>
+    </ul>
+  </section>
+
+  <section class="policy" id="beta">
+    <h2><span class="num">07</span> Beta and changes to the Service</h2>
+    <ul class="bul">
+      <li>v1 of ChoreBoard is in closed beta. Some features will change, others will be added or removed.</li>
+      <li>We aim for high availability but provide the Service "as is" with no uptime guarantee during the beta period.</li>
+      <li>We may add or remove sub-processors, change the chore catalog defaults, or adjust the gamification curve. Material changes that affect families' data are described in the <a class="link" href="/privacy.html">Privacy Policy</a>.</li>
+    </ul>
+  </section>
+
+  <section class="policy" id="pricing">
+    <h2><span class="num">08</span> Pricing</h2>
+    <p>
+      ChoreBoard is free during the closed beta. If we introduce paid plans,
+      the Owner will be notified and asked to opt in <strong>before</strong>
+      any charge is made. A meaningful free tier will remain.
+    </p>
+  </section>
+
+  <section class="policy" id="content">
+    <h2><span class="num">09</span> Your content</h2>
+    <ul class="bul">
+      <li>You retain ownership of the content you put into ChoreBoard — chore names, photos, ledger entries, family names, kids' display names, and so on ("<strong>Your Content</strong>").</li>
+      <li>You grant us a non-exclusive, royalty-free, worldwide licence to host, copy, transmit, display, and back up Your Content for the sole purpose of running the Service for you.</li>
+      <li>That licence ends when you delete the content (subject to the backup window described in the Privacy Policy).</li>
+      <li>You are responsible for the legality of Your Content. You confirm you have the rights to upload it.</li>
+    </ul>
+  </section>
+
+  <section class="policy" id="ip">
+    <h2><span class="num">10</span> Our intellectual property</h2>
+    <p>
+      The ChoreBoard name, logo, design system, app code, and documentation
+      are owned by us. You may use them only as needed to use the Service. You
+      may not use the name or logo to imply endorsement or affiliation without
+      our written permission.
+    </p>
+    <p>
+      Open-source components shipped with ChoreBoard remain governed by their
+      respective licences.
+    </p>
+  </section>
+
+  <section class="policy" id="termination">
+    <h2><span class="num">11</span> Termination</h2>
+    <ul class="bul">
+      <li>You can delete your family at any time. Email <a class="link" href="mailto:privacy@choreboard.io">privacy@choreboard.io</a>.</li>
+      <li>We may suspend or terminate access if you breach these Terms, if we reasonably suspect fraud or abuse, or if we are required to by law. We'll give notice where we can.</li>
+      <li>On termination, we'll delete your data within 30 days, subject to the retention windows described in the Privacy Policy.</li>
+      <li>Sections that by their nature should survive termination (intellectual property, disclaimers, liability, indemnity, governing law) survive.</li>
+    </ul>
+  </section>
+
+  <section class="policy" id="disclaimers">
+    <h2><span class="num">12</span> Disclaimers</h2>
+    <p>
+      The Service is provided <strong>"as is"</strong> and
+      <strong>"as available"</strong>, without any warranty (express or
+      implied) of merchantability, fitness for a particular purpose, or
+      non-infringement. We do not warrant that the Service will be
+      uninterrupted, error-free, or that data will never be lost.
+    </p>
+    <p>
+      Nothing in these Terms excludes or limits any consumer guarantee that
+      cannot lawfully be excluded under the Australian Consumer Law (or
+      equivalent legislation in your jurisdiction).
+    </p>
+  </section>
+
+  <section class="policy" id="liability">
+    <h2><span class="num">13</span> Limitation of liability</h2>
+    <p>
+      To the maximum extent permitted by law, our aggregate liability arising
+      out of or relating to the Service is limited to the greater of
+      (a) the amount you paid us in the 12 months preceding the event giving
+      rise to the claim, or (b) AUD $50.
+    </p>
+    <p>
+      We are not liable for indirect, incidental, special, consequential, or
+      punitive damages, or for loss of profit, revenue, data, or goodwill.
+    </p>
+  </section>
+
+  <section class="policy" id="indemnity">
+    <h2><span class="num">14</span> Indemnity</h2>
+    <p>
+      You agree to indemnify and hold us harmless against claims, damages, and
+      reasonable costs arising from (a) your breach of these Terms, (b)
+      content you upload, or (c) your use of the Service in a way that
+      infringes another person's rights.
+    </p>
+  </section>
+
+  <section class="policy" id="law">
+    <h2><span class="num">15</span> Governing law and venue</h2>
+    <p>
+      These Terms are governed by the laws of Western Australia, Australia.
+      The courts of Western Australia have exclusive jurisdiction over any
+      dispute arising under these Terms, except that either party may seek
+      urgent injunctive relief in any court of competent jurisdiction.
+    </p>
+  </section>
+
+  <section class="policy" id="changes">
+    <h2><span class="num">16</span> Changes to these Terms</h2>
+    <p>
+      We'll post material changes here and email the Owner of each family at
+      least 14 days before they take effect. Continuing to use the Service
+      after that date means you accept the changes. If you don't, you can
+      delete your family at any time.
+    </p>
+  </section>
+
+  <section class="policy" id="contact">
+    <h2><span class="num">17</span> Contact</h2>
+    <ul class="bul">
+      <li><a class="link" href="mailto:legal@choreboard.io">legal@choreboard.io</a> — questions about these Terms.</li>
+      <li><a class="link" href="mailto:support@choreboard.io">support@choreboard.io</a> — everything else.</li>
+      <li>ChoreBoard, Australia.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="legal-foot">
+  <div class="legal-foot-inner">
+    <div class="legal-foot-meta">
+      © <span id="year"></span> ChoreBoard · made in Australia
+    </div>
+    <nav class="legal-foot-links" aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+      <a href="https://app.choreboard.io">Sign in</a>
+      <a href="mailto:support@choreboard.io">support@choreboard.io</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = String(new Date().getFullYear());
+</script>
+
+</body>
+</html>
