@@ -1,0 +1,56 @@
+# ChoreBoard — marketing site (https://choreboard.io)
+# Goal: be friendly to every search engine and every social-preview crawler.
+
+User-agent: *
+Allow: /
+
+# Social-preview crawlers (link unfurlers). Named explicitly so future
+# tightening of the wildcard rule above can't accidentally block link
+# previews on Facebook, Instagram, WhatsApp, X, LinkedIn, iMessage, etc.
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Pinterest
+Allow: /
+
+User-agent: redditbot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
