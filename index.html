@@ -212,7 +212,7 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 800; letter-spacing: 
   background: rgba(246,238,213,0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+  padding: 12px 16px;
   padding-top: max(12px, env(safe-area-inset-top));
 }
 @media (min-width: 640px) { .topbar { padding: 16px 28px; } }
@@ -771,6 +771,115 @@ footer {
 .footer-links a:hover { text-decoration: underline; }
 .footer-note { max-width: 720px; margin: 16px auto 0; text-align: center; font-size: 11px; line-height: 1.55; color: var(--ink-400); }
 
+/* === Mobile board hint ================================================ */
+.board-mobile-hint {
+  display: none; /* turned on for touch devices + small viewports below */
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: rgba(50,83,215,0.10);
+  box-shadow: 0 0 0 2px var(--accent-blue);
+}
+.board-mobile-hint .bmh-row { display: flex; gap: 12px; align-items: flex-start; }
+.board-mobile-hint .bmh-glyph { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.board-mobile-hint .bmh-title { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--ink-900); }
+.board-mobile-hint .bmh-body  { margin-top: 4px; font-size: 12px; line-height: 1.5; color: var(--ink-700); }
+.board-mobile-hint .bmh-body b { color: var(--ink-900); }
+html.is-touch .board-mobile-hint { display: block; }
+
+/* Drag-vs-tap legend swapping — keyed off the `is-touch` class on <html>
+   so we react to the real capability of the device, not just viewport. */
+.mobile-legend { display: none; }
+html.is-touch .desktop-legend { display: none; }
+html.is-touch .mobile-legend  { display: inline; }
+
+/* On touch devices, let the page scroll past the chore cards naturally
+   (the JS drag system is disabled there — tap is the only interaction). */
+html.is-touch .chore-card { touch-action: manipulation; cursor: pointer; }
+
+/* === Mobile-only refinements (≤640px) ================================ */
+@media (max-width: 640px) {
+  /* Scroll-snap on mobile fights iOS Safari's address-bar resize and
+     produces unwanted snapbacks. Sections also don't need to fill the
+     viewport — content should drive height. */
+  html { scroll-snap-type: none; }
+  section.section {
+    scroll-snap-align: none;
+    min-height: auto;
+    padding: 32px 16px;
+    scroll-margin-top: 96px;
+  }
+  /* Less moving chrome on small screens. */
+  .scroll-progress { display: none; }
+
+  /* Always show the tap-first orientation strip on small viewports too,
+     even if media-features misreport hover/pointer. */
+  .board-mobile-hint { display: block; }
+  .desktop-legend { display: none; }
+  .mobile-legend  { display: inline; }
+
+  /* Compact dot-nav so the chrome doesn't eat the viewport. */
+  .dots { padding: 4px 12px; gap: 4px; top: 54px; }
+  .dot { height: 10px; width: 10px; }
+  .dot-btn { min-width: 32px; min-height: 32px; padding: 8px 4px; }
+  .dot-btn[aria-current="true"] .dot { width: 28px; }
+  .dot-label { display: none; } /* keeps the bar a clean strip on mobile */
+
+  /* Hero: one-column feature list reads better on narrow phones. */
+  .hero .feature-list { grid-template-columns: 1fr; gap: 8px; }
+
+  /* Hero demo stack: the two background cards overlap badly under 480px
+     and the main card has a 152px top margin to clear them. Hide the
+     decoration and pull the main card up so the hero stays compact. */
+  .demo-stack { min-height: 220px; max-width: 360px; }
+  .demo-stack .bg-card { display: none; }
+  .demo-card-main { margin-top: 8px; width: 100%; max-width: 320px; }
+  .demo-tally { margin-top: 24px; }
+
+  /* Board: stop the columns from reserving hundreds of pixels of empty
+     space and stop nested scroll. Content should drive height so the
+     whole section fits in a normal page scroll. */
+  .column, .column.available, .column.approved { min-height: 0; }
+  .column.available .cards,
+  .column.approved  .cards { max-height: none; overflow: visible; padding-right: 0; }
+  .lane { min-height: 0; }
+  .lane .drop-hint { padding: 16px; font-size: 10px; }
+
+  /* Tighter section title block on mobile. */
+  .section-title { margin-bottom: 20px; gap: 8px; }
+  .section-title h2 { font-size: clamp(28px, 8vw, 40px); }
+
+  /* Compact stat panel: smaller XP read-out, smaller tile values. */
+  .stat-panel { padding: 14px; }
+  .stat-panel .level-row .level { font-size: 22px; }
+  .stat-panel .tiles { gap: 6px; }
+  .stat-panel .tile .val { font-size: 16px; }
+
+  /* Detail readout: less bulky when it's just the placeholder copy. */
+  .detail-readout { padding: 14px; }
+  .detail-readout h4 { font-size: 16px; }
+  .detail-readout p  { font-size: 13px; }
+
+  /* Family TV padding tightening. */
+  .tv-hero { padding: 20px; gap: 16px; }
+  .leaderboard { padding: 16px; }
+  .tv-tile { padding: 14px; }
+  .tv-stats .item { padding: 14px; }
+
+  /* Champion card looks better with a touch less padding on phones. */
+  .champion-card { padding: 20px; gap: 20px; }
+
+  /* Footer note can shrink a hair. */
+  footer { padding: 24px 16px; }
+}
+
+/* Very small phones (≤380px): a couple more pixels back. */
+@media (max-width: 380px) {
+  section.section { padding: 24px 14px; }
+  .hero h1 { font-size: clamp(36px, 11vw, 48px); }
+  .hero p.lead { font-size: 15px; }
+}
+
 /* === Animations ======================================================= */
 @keyframes pulseRed {
   0%, 100% { box-shadow: 0 0 0 0 rgba(219,70,70,0.65), var(--paper-sm); }
@@ -969,6 +1078,20 @@ footer {
       </div>
     </div>
 
+    <!-- Mobile-only orientation strip. Drag-and-drop doesn't translate when
+         source and target columns aren't on screen at the same time, so on
+         touch devices we surface tap-to-auto-claim and the auto-play tour
+         up front instead. -->
+    <div class="board-mobile-hint" aria-hidden="false">
+      <div class="bmh-row">
+        <span class="bmh-glyph" aria-hidden="true">👆</span>
+        <div>
+          <div class="bmh-title">Tap a card to see the pitch</div>
+          <div class="bmh-body">Each card plays differently for parents, kids, and the TV. Or hit <b>Auto-play tour ▶</b> above and watch it run itself.</div>
+        </div>
+      </div>
+    </div>
+
     <div class="board-grid">
       <div class="board-col">
         <section class="column available" data-column="available" aria-label="Available features">
@@ -1027,9 +1150,10 @@ footer {
     </div>
 
     <div class="board-legend">
-      <span><span class="swatch" style="background:var(--ink-900);"></span>drag, or</span>
+      <span class="desktop-legend"><span class="swatch" style="background:var(--ink-900);"></span>drag, or</span>
       <span><span class="swatch" style="background:var(--accent-yellow);"></span>tap to auto-claim</span>
-      <span><span class="swatch" style="background:var(--money);"></span>drag to Approved to file</span>
+      <span class="desktop-legend"><span class="swatch" style="background:var(--money);"></span>drag to Approved to file</span>
+      <span class="mobile-legend"><span class="swatch" style="background:var(--money);"></span>tap again to file</span>
       <span class="kb-hint">keyboard: tab to a card, enter to auto-claim, R to reset</span>
     </div>
   </div>
@@ -1446,6 +1570,17 @@ footer {
     { id: 'start',  label: 'START',    title: 'Start a family' },
   ];
 
+  // ---- Capability detection --------------------------------------------
+  // Drag-and-drop is a desktop-only idiom in this layout — on mobile the
+  // source and target aren't on screen at the same time, and `touch-action:
+  // none` would also rob the page of vertical scroll. We detect coarse
+  // pointers once and surface tap-to-auto-claim as the only interaction.
+  const IS_TOUCH = !!(window.matchMedia && (
+    window.matchMedia('(hover: none)').matches ||
+    window.matchMedia('(pointer: coarse)').matches
+  ));
+  if (IS_TOUCH) document.documentElement.classList.add('is-touch');
+
   // ---- Helpers ----------------------------------------------------------
   const money = (cents) => '$' + (cents / 100).toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -1599,7 +1734,10 @@ footer {
     $('#count-approved').textContent = String(cards.length);
     const root = $('#cards-approved');
     if (cards.length === 0) {
-      root.innerHTML = '<div class="empty">Drag a card here when you\u2019re done with it.</div>';
+      const empty = IS_TOUCH
+        ? 'Tap a card in a persona lane to file it here.'
+        : 'Drag a card here when you\u2019re done with it.';
+      root.innerHTML = `<div class="empty">${empty}</div>`;
       return;
     }
     root.innerHTML = cards.map((c) => renderCardHtml(c, { accent: '#0F6E37', approved: true })).join('');
@@ -1607,11 +1745,12 @@ footer {
 
   function renderLanes() {
     const root = $('#lanes');
+    const dropHintText = IS_TOUCH ? 'Tap a card to send it here' : 'Drop a feature here';
     root.innerHTML = PERSONA_ORDER.map((p) => {
       const meta = PERSONAS[p];
       const cards = FEATURE_CARDS.filter((c) => state.placement[c.id] === p);
       const inner = cards.length === 0
-        ? `<div class="drop-hint" style="color:${meta.color};">Drop a feature here</div>`
+        ? `<div class="drop-hint" style="color:${meta.color};">${dropHintText}</div>`
         : cards.map((c) => renderCardHtml(c, { accent: meta.color, autoClaimLabel: 'File ✓' })).join('');
       return `
         <section class="lane" data-column="${p}" style="background:${hexAlpha(meta.color, 0.18)};">
@@ -1683,6 +1822,16 @@ footer {
       <p>${escapeHtml(copy.body)}</p>
       <div class="persona-tabs">${tabs}</div>
     `;
+
+    // On touch devices the detail-readout sits well below the tapped card;
+    // gently scroll it into view so the visitor lands on the pitch rather
+    // than wondering where the text went. Skipped during auto-play (the
+    // tour churns cards faster than scrolling can keep up).
+    if (IS_TOUCH && !state.autoPlaying) {
+      requestAnimationFrame(() => {
+        try { root.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch { /* older Safari */ }
+      });
+    }
   }
 
   // ---- Family TV section folds visitor XP into the simulated total ----
@@ -1898,7 +2047,13 @@ footer {
     if (!srcEl) return;
     const card = FEATURE_CARDS.find((c) => c.id === srcEl.dataset.cardId);
     if (!card) return;
-    downCtx = { card, srcEl, x: evt.clientX, y: evt.clientY, pointerId: evt.pointerId, dragged: false };
+    downCtx = {
+      card, srcEl,
+      x: evt.clientX, y: evt.clientY,
+      pointerId: evt.pointerId,
+      pointerType: evt.pointerType || (IS_TOUCH ? 'touch' : 'mouse'),
+      dragged: false,
+    };
     // Don't start a drag yet — wait for motion to disambiguate tap from drag.
   });
 
@@ -1909,6 +2064,10 @@ footer {
     }
     if (!downCtx) return;
     if (evt.pointerId !== downCtx.pointerId) return;
+    // Drag-and-drop is mouse/pen only. On touch the page must remain
+    // scrollable, so we never promote a downCtx into a dragCtx — the
+    // pointerup handler will fire the tap path instead.
+    if (downCtx.pointerType === 'touch') return;
     const moved = Math.hypot(evt.clientX - downCtx.x, evt.clientY - downCtx.y);
     if (moved > 5) {
       downCtx.dragged = true;
