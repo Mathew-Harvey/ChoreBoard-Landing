@@ -771,6 +771,130 @@ footer {
 .footer-links a:hover { text-decoration: underline; }
 .footer-note { max-width: 720px; margin: 16px auto 0; text-align: center; font-size: 11px; line-height: 1.55; color: var(--ink-400); }
 
+/* === Mobile feature reel ============================================= */
+/* Below 1100px the kanban can't show source + target on one screen, so we
+   render the same FEATURE_CARDS as a vertical reel of expandable cards.
+   Each card holds the full per-persona pitch behind a tabbed view. */
+.board-reel { display: none; }
+@media (max-width: 1099px) {
+  .board-grid { display: none; }
+  .board-reel { display: flex; flex-direction: column; gap: 12px; }
+  .board-legend { display: none; } /* "drag" wording doesn't apply here */
+}
+
+.reel-card {
+  background: var(--paper);
+  border-radius: var(--chunky);
+  box-shadow: var(--ring), var(--paper-md);
+  overflow: hidden;
+  border-left: 6px solid transparent;
+  transition: border-left-color .2s ease;
+}
+.reel-card.all-seen { opacity: .96; }
+
+.rc-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 14px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  min-height: 64px;
+}
+.rc-head:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: -4px;
+  border-radius: var(--chunky);
+}
+.rc-icon {
+  display: grid; place-items: center;
+  width: 40px; height: 40px;
+  flex-shrink: 0;
+  background: var(--cream-200);
+  border-radius: 8px;
+  font-size: 18px;
+  box-shadow: 0 0 0 1px rgba(16,24,43,0.15);
+  line-height: 1;
+}
+.rc-text { min-width: 0; flex: 1; }
+.rc-title-row {
+  display: flex; gap: 8px;
+  justify-content: space-between; align-items: flex-start;
+}
+.rc-title {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.3;
+  color: var(--ink-900);
+  letter-spacing: 0;
+}
+.rc-preview {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--ink-700);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.rc-meta { margin-top: 8px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.rc-chevron {
+  flex-shrink: 0;
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--ink-500);
+  transition: transform .25s ease, color .25s ease;
+}
+.reel-card.is-open .rc-chevron { transform: rotate(180deg); color: var(--ink-900); }
+
+.rc-body {
+  padding: 0 14px 16px 14px;
+  border-top: 1px solid rgba(16,24,43,0.08);
+  animation: floatIn 220ms ease-out;
+}
+.rc-tabs {
+  margin-top: 14px;
+  display: flex; gap: 6px;
+  flex-wrap: wrap;
+}
+.rc-tab {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  background: rgba(16,24,43,0.06);
+  color: var(--ink-700);
+  border: none;
+  cursor: pointer;
+  min-height: 32px;
+  transition: background-color .15s, color .15s;
+}
+.rc-tab.active { color: #fff; } /* background colour set inline by JS */
+.rc-pitch { margin-top: 14px; }
+.rc-headline {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--ink-900);
+  letter-spacing: -0.01em;
+}
+.rc-body-text {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-700);
+}
+
 /* === Mobile board hint ================================================ */
 .board-mobile-hint {
   display: none; /* turned on for touch devices + small viewports below */
@@ -785,7 +909,9 @@ footer {
 .board-mobile-hint .bmh-title { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--ink-900); }
 .board-mobile-hint .bmh-body  { margin-top: 4px; font-size: 12px; line-height: 1.5; color: var(--ink-700); }
 .board-mobile-hint .bmh-body b { color: var(--ink-900); }
-html.is-touch .board-mobile-hint { display: block; }
+/* The hint is paired with the reel — visible exactly when the kanban
+   isn't, so visitors never see it next to a legend that contradicts it. */
+@media (max-width: 1099px) { .board-mobile-hint { display: block; } }
 
 /* Drag-vs-tap legend swapping — keyed off the `is-touch` class on <html>
    so we react to the real capability of the device, not just viewport. */
@@ -1078,16 +1204,16 @@ html.is-touch .chore-card { touch-action: manipulation; cursor: pointer; }
       </div>
     </div>
 
-    <!-- Mobile-only orientation strip. Drag-and-drop doesn't translate when
-         source and target columns aren't on screen at the same time, so on
-         touch devices we surface tap-to-auto-claim and the auto-play tour
-         up front instead. -->
+    <!-- Mobile/tablet orientation strip. A kanban metaphor only works when
+         the user can see source and target columns at the same time, which
+         a phone simply can't do. Below 1100px we hide the kanban entirely
+         and render the feature reel below in its place. -->
     <div class="board-mobile-hint" aria-hidden="false">
       <div class="bmh-row">
         <span class="bmh-glyph" aria-hidden="true">👆</span>
         <div>
-          <div class="bmh-title">Tap a card to see the pitch</div>
-          <div class="bmh-body">Each card plays differently for parents, kids, and the TV. Or hit <b>Auto-play tour ▶</b> above and watch it run itself.</div>
+          <div class="bmh-title">Tap a feature to read its pitch</div>
+          <div class="bmh-body">Each one plays differently for <b>parents</b>, <b>kids</b>, and the <b>TV on the wall</b> — tap a tab inside to switch the angle. Or hit <b>Auto-play tour ▶</b> above and the reel runs itself.</div>
         </div>
       </div>
     </div>
@@ -1148,6 +1274,11 @@ html.is-touch .chore-card { touch-action: manipulation; cursor: pointer; }
         </section>
       </div>
     </div>
+
+    <!-- Mobile / tablet feature reel. Same FEATURE_CARDS data as the
+         desktop kanban — but rendered as a vertical list of expandable
+         cards. Hidden on ≥1100px (see CSS); the kanban is hidden below. -->
+    <div class="board-reel" id="board-reel" aria-label="Feature reel"></div>
 
     <div class="board-legend">
       <span class="desktop-legend"><span class="swatch" style="background:var(--ink-900);"></span>drag, or</span>
@@ -1770,6 +1901,94 @@ html.is-touch .chore-card { touch-action: manipulation; cursor: pointer; }
     }).join('');
   }
 
+  // ---- Mobile feature reel --------------------------------------------
+  // Tracks the previously-focused card so we only smooth-scroll when the
+  // focus actually changes (not on every persona-tab tap inside a card).
+  let lastReelFocus = null;
+  function renderReel() {
+    const root = $('#board-reel');
+    if (!root) return;
+
+    root.innerHTML = FEATURE_CARDS.map((card) => {
+      const col = state.placement[card.id];
+      const inLane = col === 'parent' || col === 'kid' || col === 'family';
+      const persona = inLane ? col : card.bestPersona;
+      const meta = PERSONAS[persona];
+      const copy = card.personas[persona];
+      const isOpen = state.focused === card.id;
+      const seen = state.seenBy[card.id] || [];
+      const allSeen = seen.length >= PERSONA_ORDER.length || col === 'approved';
+
+      const amount = card.amountCents > 0
+        ? `<span class="money-amt" style="font-size:13px;">${money(card.amountCents)}</span>`
+        : '';
+
+      // Pill mirrors the kanban's claim/approve metaphor in copy form:
+      // un-explored cards look "new", partially-read cards show progress,
+      // fully read ones get the green tick.
+      let pill;
+      if (allSeen)            pill = '<span class="pill pill-approved">\u2713 READ</span>';
+      else if (seen.length)   pill = `<span class="pill pill-claimed">${seen.length} of 3 read</span>`;
+      else                    pill = '<span class="pill pill-available">FEATURE</span>';
+
+      const tabs = PERSONA_ORDER.map((p) => {
+        const m = PERSONAS[p];
+        const active = p === persona;
+        const wasSeen = seen.includes(p);
+        const style = active ? `background:${m.color};color:#fff;` : '';
+        const label = wasSeen && !active ? `${m.name} \u2713` : m.name;
+        return `<button type="button" class="rc-tab${active ? ' active' : ''}" data-persona="${p}" style="${style}">${escapeHtml(label)}</button>`;
+      }).join('');
+
+      const body = isOpen ? `
+        <div class="rc-body">
+          <div class="rc-tabs" role="tablist">${tabs}</div>
+          <div class="rc-pitch">
+            <h5 class="rc-headline">${escapeHtml(copy.headline)}</h5>
+            <p class="rc-body-text">${escapeHtml(copy.body)}</p>
+          </div>
+        </div>
+      ` : '';
+
+      const cls = ['reel-card'];
+      if (isOpen) cls.push('is-open');
+      if (allSeen) cls.push('all-seen');
+      if (card.overdue && !allSeen) cls.push('overdue');
+      const borderStyle = isOpen ? `border-left-color:${meta.color};` : '';
+
+      return `
+        <article class="${cls.join(' ')}" data-card-id="${card.id}" style="${borderStyle}">
+          <button type="button" class="rc-head" aria-expanded="${isOpen}">
+            <span class="rc-icon" aria-hidden="true">${card.glyph}</span>
+            <div class="rc-text">
+              <div class="rc-title-row">
+                <h4 class="rc-title">${escapeHtml(card.title)}</h4>
+                ${amount}
+              </div>
+              <p class="rc-preview">${escapeHtml(card.preview)}</p>
+              <div class="rc-meta">${pill}</div>
+            </div>
+            <span class="rc-chevron" aria-hidden="true">\u25BE</span>
+          </button>
+          ${body}
+        </article>
+      `;
+    }).join('');
+
+    // Smooth-scroll the newly-focused card into view, but only when focus
+    // actually changes — tabbing between personas inside an already-open
+    // card shouldn't yank the page around.
+    const focusChanged = state.focused !== lastReelFocus;
+    lastReelFocus = state.focused;
+    if (focusChanged && state.focused && root.offsetParent !== null) {
+      requestAnimationFrame(() => {
+        const el = root.querySelector(`.reel-card[data-card-id="${state.focused}"]`);
+        if (!el) return;
+        try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch { /* older Safari */ }
+      });
+    }
+  }
+
   function renderStats() {
     const xp = totalXp();
     const lvl = levelFromXp(xp);
@@ -1823,11 +2042,10 @@ html.is-touch .chore-card { touch-action: manipulation; cursor: pointer; }
       <div class="persona-tabs">${tabs}</div>
     `;
 
-    // On touch devices the detail-readout sits well below the tapped card;
-    // gently scroll it into view so the visitor lands on the pitch rather
-    // than wondering where the text went. Skipped during auto-play (the
-    // tour churns cards faster than scrolling can keep up).
-    if (IS_TOUCH && !state.autoPlaying) {
+    // On touch devices the detail-readout sits below the kanban; on
+    // viewports where the reel takes over, the readout is display:none
+    // and offsetParent is null — skip the scroll then.
+    if (IS_TOUCH && !state.autoPlaying && root.offsetParent !== null) {
       requestAnimationFrame(() => {
         try { root.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch { /* older Safari */ }
       });
@@ -1938,6 +2156,7 @@ html.is-touch .chore-card { touch-action: manipulation; cursor: pointer; }
     renderAvailable();
     renderLanes();
     renderApproved();
+    renderReel();
     renderStats();
     renderDetail();
     renderFamilyTV();
@@ -1958,7 +2177,9 @@ html.is-touch .chore-card { touch-action: manipulation; cursor: pointer; }
   }
   function focusCard(cardId) {
     state.focused = cardId;
-    renderDetail();
+    // Full re-render so the reel's open-state and the desktop detail-readout
+    // stay in sync. Cheap — the DOM under the board section is tiny.
+    renderAll();
   }
   function resetBoard() {
     state.placement = initialPlacement();
@@ -2101,6 +2322,48 @@ html.is-touch .chore-card { touch-action: manipulation; cursor: pointer; }
     if (dragCtx && evt.pointerId === dragCtx.pointerId) endDrag(evt, true);
     downCtx = null;
   });
+
+  // ---- Reel interactions (mobile / tablet) -----------------------------
+  // The reel is a parallel surface to the kanban. We use plain click
+  // delegation here — no drag mechanic to disambiguate, and click fires
+  // reliably on every input modality (mouse, touch, keyboard).
+  const reelEl = $('#board-reel');
+  if (reelEl) {
+    reelEl.addEventListener('click', (evt) => {
+      const cardEl = evt.target.closest('.reel-card[data-card-id]');
+      if (!cardEl) return;
+      const id = cardEl.dataset.cardId;
+      const def = FEATURE_CARDS.find((c) => c.id === id);
+      if (!def) return;
+
+      // 1) Persona tab tap — switch the lens for this card.
+      const tabBtn = evt.target.closest('.rc-tab[data-persona]');
+      if (tabBtn) {
+        moveCard(id, tabBtn.dataset.persona);
+        return;
+      }
+
+      // 2) Head tap — toggle expansion. Opening a never-explored card
+      //    seeds the bestPersona pitch; cards already in a lane (or
+      //    already filed as READ) reopen with whatever persona they last
+      //    landed on, so the user doesn't lose progress.
+      const head = evt.target.closest('.rc-head');
+      if (head) {
+        if (state.focused === id) {
+          state.focused = null;
+          renderAll();
+        } else {
+          const col = state.placement[id];
+          const inLane = col === 'parent' || col === 'kid' || col === 'family';
+          if (!inLane && col !== 'approved') {
+            moveCard(id, def.bestPersona);
+          } else {
+            focusCard(id);
+          }
+        }
+      }
+    });
+  }
 
   // Keyboard path: enter / space on a focused card mirrors the tap path,
   // and R anywhere outside an input resets the demo.
